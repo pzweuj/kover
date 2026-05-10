@@ -11,7 +11,7 @@ import 'package:kover/utils/extensions/document_fragment.dart';
 import 'package:kover/utils/extensions/string.dart';
 import 'package:kover/utils/html_constants.dart';
 import 'package:kover/utils/logging.dart';
-import 'package:kover/utils/node_cursor.dart';
+import 'package:kover/utils/element_cursor.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'epub_reader.freezed.dart';
@@ -44,7 +44,7 @@ class EpubReflow extends _$EpubReflow {
   // first build and cleared as soon as we reach a Display state, so that
   // subsequent page-turn rebuilds never re-trigger a seek.
   String? _resumeScrollId;
-  late NodeCursor _cursor;
+  late ElementCursor _cursor;
 
   @override
   Future<EpubReflowState> build({
@@ -90,11 +90,7 @@ class EpubReflow extends _$EpubReflow {
       log.d('loaded font family ${family.key}');
     }
 
-    _cursor = NodeCursor(
-      root:
-          pageContent.root.nodes.firstWhere((node) => node is Element)
-              as Element,
-    );
+    _cursor = ElementCursor(root: pageContent.root.children.first);
 
     return EpubReflowState(
       page: pageContent,
@@ -109,13 +105,13 @@ class EpubReflow extends _$EpubReflow {
     try {
       _processingRender = true;
 
-      final next = _cursor.next();
+      final next = _cursor.addNext();
 
       if (next == null) {
         final newSubpages = [
           ...current.subpages,
           ?current.buffer,
-        ];
+        ].where((fragment) => fragment.hasVisibleNodes).toList();
 
         if (newSubpages.isEmpty) {
           log.d('no content to render, add empty page');
@@ -159,7 +155,10 @@ class EpubReflow extends _$EpubReflow {
       final newSubpageNode = _cursor.commitSplit();
 
       final fragment = DocumentFragment()..append(newSubpageNode);
-      final newSubpages = [...current.subpages, fragment];
+      final newSubpages = [
+        ...current.subpages,
+        if (fragment.hasVisibleNodes) fragment,
+      ];
       var newState = current.copyWith(
         subpages: newSubpages,
         buffer: null,
@@ -413,12 +412,12 @@ class EpubNavigation extends _$EpubNavigation {
       ).future,
     );
 
-    if (reflow.status == .measuring &&
-        current.subpage >= reflow.subpages.length) {
+    if (reflow.status != .done && current.subpage >= reflow.subpages.length) {
       return;
     }
 
-    if (current.subpage < reflow.subpages.length - 1) {
+    if (current.subpage < reflow.subpages.length - 1 ||
+        reflow.status != .done) {
       await jumpToSubpage(current.subpage + 1);
     } else if (current.page < current.totalPages - 1) {
       await jumpToPage(current.page + 1);
