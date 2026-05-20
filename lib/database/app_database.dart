@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:kover/database/app_database.steps.dart';
 import 'package:kover/database/dao/book_dao.dart';
 import 'package:kover/database/dao/chapters_dao.dart';
 import 'package:kover/database/dao/download_dao.dart';
@@ -8,6 +9,7 @@ import 'package:kover/database/dao/reader_dao.dart';
 import 'package:kover/database/dao/riverpod_dao.dart';
 import 'package:kover/database/dao/series_dao.dart';
 import 'package:kover/database/dao/series_metadata_dao.dart';
+import 'package:kover/database/dao/server_settings_dao.dart';
 import 'package:kover/database/dao/storage_dao.dart';
 import 'package:kover/database/dao/volumes_dao.dart';
 import 'package:kover/database/tables/book_info.dart';
@@ -18,6 +20,7 @@ import 'package:kover/database/tables/progress.dart';
 import 'package:kover/database/tables/riverpod_storage.dart';
 import 'package:kover/database/tables/series.dart';
 import 'package:kover/database/tables/series_metadata.dart';
+import 'package:kover/database/tables/server_settings.dart';
 import 'package:kover/database/tables/volumes.dart';
 import 'package:kover/database/tables/want_to_read.dart';
 import 'package:kover/models/enums/format.dart';
@@ -49,6 +52,7 @@ part 'app_database.g.dart';
     BookChaptersTable,
     WantToRead,
     DownloadedPages,
+    ServerSettings,
   ],
   daos: [
     StorageDao,
@@ -61,6 +65,7 @@ part 'app_database.g.dart';
     BookDao,
     DownloadDao,
     RiverpodDao,
+    ServerSettingsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -69,7 +74,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   /// Clear all content data from the database. Does not clear app state data (e.g. credentials, settings).
   /// Useful e.g. when switching user.
@@ -115,6 +120,11 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
+      onUpgrade: stepByStep(
+        from1To2: (m, schema) async {
+          await m.createTable(schema.serverSettings);
+        },
+      ),
       beforeOpen: (details) async {
         // Clear legacy credentials entry from database if present.
         final rows = await (delete(

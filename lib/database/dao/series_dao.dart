@@ -4,6 +4,7 @@ import 'package:kover/database/dao/volumes_dao.dart';
 import 'package:kover/database/tables/chapters.dart';
 import 'package:kover/database/tables/progress.dart';
 import 'package:kover/database/tables/series.dart';
+import 'package:kover/database/tables/server_settings.dart';
 import 'package:kover/database/tables/volumes.dart';
 import 'package:kover/database/tables/want_to_read.dart';
 import 'package:kover/utils/data_constants.dart';
@@ -20,6 +21,7 @@ part 'series_dao.g.dart';
     Chapters,
     ReadingProgress,
     WantToRead,
+    ServerSettings,
   ],
 )
 class SeriesDao extends DatabaseAccessor<AppDatabase> with _$SeriesDaoMixin {
@@ -269,45 +271,55 @@ class SeriesDao extends DatabaseAccessor<AppDatabase> with _$SeriesDaoMixin {
   /// A series is on deck when:
   /// - The user has read some pages but not all (partially read)
   /// - AND either:
-  ///   - The last reading activity was within [DataConstants.onDeckProgressDays] days, OR
-  ///   - A chapter was added within [DataConstants.onDeckUpdateDays] days
+  ///   - The last reading activity was within [ServerSettings.onDeckProgressDays] days, OR
+  ///   - A chapter was added within [ServerSettings.onDeckUpdateDays] days
   ///
   /// Ordered by most recent reading activity, then most recently updated.
-  Stream<List<SeriesData>> watchOnDeck() {
+  Stream<List<SeriesData>> watchOnDeck() async* {
     final totalPagesRead = readingProgress.pagesRead.sum();
     final latestReadDate = readingProgress.lastModified.max();
 
-    final cutoffProgress = DateTime.now().subtract(
-      const Duration(days: DataConstants.onDeckProgressDays),
-    );
-    final cutoffLastAdded = DateTime.now().subtract(
-      const Duration(days: DataConstants.onDeckUpdateDays),
-    );
+    yield* managers.serverSettings
+        .filter((f) => f.key.equals(DataConstants.serverSettingsKey))
+        .watchSingleOrNull()
+        .switchMap((setting) {
+          final progressDays =
+              setting?.onDeckProgressDays ?? DataConstants.onDeckProgressDays;
+          final updateDays =
+              setting?.onDeckUpdateDays ?? DataConstants.onDeckUpdateDays;
 
-    final query =
-        select(series).join([
-            innerJoin(
-              readingProgress,
-              readingProgress.seriesId.equalsExp(series.id),
-            ),
-          ])
-          ..addColumns([totalPagesRead, latestReadDate])
-          ..groupBy(
-            [series.id],
-            having:
-                totalPagesRead.isBiggerThanValue(0) &
-                totalPagesRead.isSmallerThan(series.pages) &
-                (latestReadDate.isBiggerOrEqualValue(cutoffProgress) |
-                    series.lastChapterAdded.isBiggerOrEqualValue(
-                      cutoffLastAdded,
-                    )),
-          )
-          ..orderBy([
-            OrderingTerm.desc(latestReadDate),
-            OrderingTerm.desc(series.lastChapterAdded),
-          ]);
+          final cutoffProgress = DateTime.now().subtract(
+            Duration(days: progressDays),
+          );
+          final cutoffLastAdded = DateTime.now().subtract(
+            Duration(days: updateDays),
+          );
 
-    return query.map((row) => row.readTable(series)).watch();
+          final query =
+              select(series).join([
+                  innerJoin(
+                    readingProgress,
+                    readingProgress.seriesId.equalsExp(series.id),
+                  ),
+                ])
+                ..addColumns([totalPagesRead, latestReadDate])
+                ..groupBy(
+                  [series.id],
+                  having:
+                      totalPagesRead.isBiggerThanValue(0) &
+                      totalPagesRead.isSmallerThan(series.pages) &
+                      (latestReadDate.isBiggerOrEqualValue(cutoffProgress) |
+                          series.lastChapterAdded.isBiggerOrEqualValue(
+                            cutoffLastAdded,
+                          )),
+                )
+                ..orderBy([
+                  OrderingTerm.desc(latestReadDate),
+                  OrderingTerm.desc(series.lastChapterAdded),
+                ]);
+
+          return query.map((row) => row.readTable(series)).watch();
+        });
   }
 
   /// Watch recently updated series
