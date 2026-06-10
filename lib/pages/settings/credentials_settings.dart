@@ -27,6 +27,9 @@ class CredentialsSettings extends HookConsumerWidget {
           asyncValue: settings,
           data: (data) {
             final urlController = TextEditingController(text: data.url);
+            final fallbackUrlController = TextEditingController(
+              text: data.fallbackUrl,
+            );
             final apiKeyController = TextEditingController(text: data.apiKey);
 
             return Column(
@@ -42,7 +45,15 @@ class CredentialsSettings extends HookConsumerWidget {
                   enabled: loginStatus != .loading,
                   controller: urlController,
                   decoration: InputDecoration(
-                    labelText: context.l10n.baseUrl,
+                    labelText: context.l10n.primaryBaseUrl,
+                  ),
+                ),
+                TextField(
+                  enabled: loginStatus != .loading,
+                  controller: fallbackUrlController,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fallbackBaseUrl,
+                    helperText: context.l10n.fallbackBaseUrlDescription,
                   ),
                 ),
                 TextField(
@@ -79,8 +90,9 @@ class CredentialsSettings extends HookConsumerWidget {
                             .read(credentialsProvider.notifier)
                             .updateCredentials(
                               CredentialsState(
-                                url: urlController.text,
-                                apiKey: apiKeyController.text,
+                                url: urlController.text.trim(),
+                                fallbackUrl: fallbackUrlController.text.trim(),
+                                apiKey: apiKeyController.text.trim(),
                               ),
                             );
                       },

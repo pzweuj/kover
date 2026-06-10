@@ -12,6 +12,7 @@ part 'credentials.g.dart';
 sealed class CredentialsState with _$CredentialsState {
   const factory CredentialsState({
     String? url,
+    String? fallbackUrl,
     String? apiKey,
   }) = _CredentialsState;
 

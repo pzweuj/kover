@@ -27,6 +27,37 @@ class ChoiceOption<T> extends StatelessWidget {
       icon: icon,
       child: LayoutBuilder(
         builder: (context, constraints) {
+          if (constraints.maxWidth < 420) {
+            return DropdownButtonFormField<T>(
+              initialValue: value,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                isDense: true,
+                border: OutlineInputBorder(),
+              ),
+              items: options
+                  .map(
+                    (option) => DropdownMenuItem<T>(
+                      value: option.value,
+                      child: Row(
+                        mainAxisSize: .min,
+                        spacing: 8.0,
+                        children: [
+                          if (option.icon != null) Icon(option.icon, size: 18),
+                          Flexible(child: Text(option.label)),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (newValue) {
+                if (newValue != null && newValue != value) {
+                  onChanged?.call(newValue);
+                }
+              },
+            );
+          }
+
           return SingleChildScrollView(
             scrollDirection: .horizontal,
             child: ConstrainedBox(

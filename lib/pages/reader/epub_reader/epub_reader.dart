@@ -4,8 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:html/dom.dart';
-import 'package:kover/pages/reader/overlay/reader_overlay.dart';
 import 'package:kover/pages/reader/epub_reader/epub_toc_drawer.dart';
+import 'package:kover/pages/reader/overlay/reader_overlay.dart';
 import 'package:kover/riverpod/providers/reader/epub_reader.dart';
 import 'package:kover/riverpod/providers/settings/epub_reader_settings.dart';
 import 'package:kover/utils/cached_image_factory.dart';
@@ -289,7 +289,6 @@ class _MeasureContent extends HookConsumerWidget {
       page: page,
     );
     final reflow = ref.watch(provider);
-    final imageCache = useState(CachedImageFactory());
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -320,7 +319,6 @@ class _MeasureContent extends HookConsumerWidget {
                   key: key.value,
                   styles: data.page.styles,
                   html: (data.buffer ?? DocumentFragment()).outerHtml,
-                  imageCache: imageCache.value,
                 ),
               ],
             ),
@@ -360,7 +358,9 @@ class _RenderContent extends ConsumerWidget {
             html,
             buildAsync: false,
             enableCaching: true,
-            factoryBuilder: () => imageCache ?? CachedImageFactory(),
+            factoryBuilder: () =>
+                imageCache ??
+                CachedImageFactory(imageFit: epubSettings.imageFit),
             customStylesBuilder: (element) {
               final s = Map<String, String>.from(
                 styles[element.localName] ?? {},

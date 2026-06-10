@@ -48,42 +48,54 @@ class DetailAppBar extends HookConsumerWidget {
         primaryColor: primaryColor,
         secondaryColor: secondaryColor,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: LayoutConstants.largePadding,
-        ),
-        child: Column(
-          spacing: LayoutConstants.largePadding,
-          crossAxisAlignment: .start,
-          mainAxisAlignment: .start,
-          mainAxisSize: .min,
-          children: [
-            const SizedBox.square(dimension: kToolbarHeight),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Row(
-              spacing: LayoutConstants.largePadding,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < LayoutBreakpoints.compact;
+          final horizontalPadding = compact
+              ? LayoutConstants.mediumPadding
+              : LayoutConstants.largePadding;
+          final coverHeight = compact ? 144.0 : 180.0;
+
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              spacing: compact
+                  ? LayoutConstants.mediumPadding
+                  : LayoutConstants.largePadding,
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
-                SizedBox(
-                  height: 200,
-                  child: ClipRRect(
-                    borderRadius: BorderRadiusGeometry.circular(
-                      LayoutConstants.smallBorderRadius,
+                const SizedBox.square(dimension: kToolbarHeight),
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Row(
+                  spacing: compact
+                      ? LayoutConstants.mediumPadding
+                      : LayoutConstants.largePadding,
+                  children: [
+                    SizedBox(
+                      height: coverHeight,
+                      child: ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(
+                          LayoutConstants.smallBorderRadius,
+                        ),
+                        child: cover,
+                      ),
                     ),
-                    child: cover,
-                  ),
+                    Expanded(child: info),
+                  ],
                 ),
-                Expanded(
-                  child: info,
-                ),
+                expandedContinueButton,
+                const SizedBox.shrink(),
               ],
             ),
-            expandedContinueButton,
-            const SizedBox.shrink(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

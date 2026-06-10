@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/l10n/app_localizations.dart';
+import 'package:kover/models/epub_image_fit.dart';
 import 'package:kover/models/read_direction.dart';
 import 'package:kover/riverpod/providers/settings/epub_reader_settings.dart';
 import 'package:kover/utils/constants/kover_icons.dart';
@@ -66,6 +67,43 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                                 .read(provider.notifier)
                                 .toggleReadDirection();
                           }
+                        },
+                      ),
+                      ChoiceOption<EpubImageFit>(
+                        title: context.l10n.imageFit,
+                        icon: LucideIcons.image,
+                        value: settings.imageFit,
+                        options: [
+                          ChoiceOptionEntry(
+                            value: EpubImageFit.original,
+                            label: context.l10n.originalSize,
+                            icon: LucideIcons.image,
+                          ),
+                          ChoiceOptionEntry(
+                            value: EpubImageFit.fitWidth,
+                            label: context.l10n.width,
+                            icon: KoverIcons.fitWidth,
+                          ),
+                          ChoiceOptionEntry(
+                            value: EpubImageFit.fitHeight,
+                            label: context.l10n.height,
+                            icon: KoverIcons.fitHeight,
+                          ),
+                          ChoiceOptionEntry(
+                            value: EpubImageFit.contain,
+                            label: context.l10n.contain,
+                            icon: KoverIcons.fitContain,
+                          ),
+                          ChoiceOptionEntry(
+                            value: EpubImageFit.stretch,
+                            label: context.l10n.stretch,
+                            icon: Icons.open_in_full,
+                          ),
+                        ],
+                        onChanged: (newValue) async {
+                          await ref.read(provider.notifier).setImageFit(
+                            newValue,
+                          );
                         },
                       ),
                       NumericOption(

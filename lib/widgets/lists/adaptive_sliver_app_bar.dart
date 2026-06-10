@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -24,18 +26,25 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topPadding = MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.sizeOf(context).height;
 
     final isCollapsed = useState(false);
-    final infoHeight = useState(500.0);
+    final infoHeight = useState(360.0);
 
     final minFlexibleHeight = useMemoized(
       () => kToolbarHeight + topPadding + (bottom?.preferredSize.height ?? 0.0),
       [topPadding, bottom],
     );
-    final expandedHeight = useMemoized(
-      () => infoHeight.value + (bottom?.preferredSize.height ?? 0.0),
-      [infoHeight.value, bottom],
-    );
+    final expandedHeight = useMemoized(() {
+      final bottomHeight = bottom?.preferredSize.height ?? 0.0;
+      final measuredHeight = infoHeight.value + bottomHeight;
+      final minExpandedHeight = minFlexibleHeight + 220.0;
+      final maxExpandedHeight = math.max(minExpandedHeight, screenHeight * 0.72);
+
+      return measuredHeight
+          .clamp(minExpandedHeight, maxExpandedHeight)
+          .toDouble();
+    }, [infoHeight.value, bottom, minFlexibleHeight, screenHeight]);
 
     return SliverAppBar(
       title: isCollapsed.value
@@ -49,8 +58,12 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
       actions: actions,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
+          final flexibleRange = (expandedHeight - minFlexibleHeight).clamp(
+            1.0,
+            double.infinity,
+          ).toDouble();
           final value =
-              (constraints.maxHeight - minFlexibleHeight) / infoHeight.value;
+              (constraints.maxHeight - minFlexibleHeight) / flexibleRange;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             isCollapsed.value = constraints.maxHeight <= minFlexibleHeight;

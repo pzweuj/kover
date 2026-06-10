@@ -70,6 +70,7 @@ class GeneralSettings extends ConsumerWidget {
                 asyncValue: generalSettings,
                 data: (generalSettings) => Column(
                   spacing: LayoutConstants.largePadding,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ChoiceOption<String>(
                       title: l10n.language,

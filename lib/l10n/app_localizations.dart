@@ -37,6 +37,12 @@ class AppLocalizations {
   String get settings => _t('Settings', '设置');
   String get credentials => _t('Credentials', '凭据');
   String get baseUrl => _t('Base URL', '服务器地址');
+  String get primaryBaseUrl => _t('Primary Base URL', '主 URL（内网）');
+  String get fallbackBaseUrl => _t('Fallback Base URL', '备用 URL（外网）');
+  String get fallbackBaseUrlDescription => _t(
+    'Optional. Used automatically when the primary URL is unreachable.',
+    '可选。当主 URL 无法访问时自动回退使用。',
+  );
   String get apiKey => _t('API Key', 'API 密钥');
   String get save => _t('Save', '保存');
   String get dataManagement => _t('Data Management', '数据管理');
@@ -108,11 +114,14 @@ class AppLocalizations {
   String get leftToRight => _t('Left To Right', '从左到右');
   String get rightToLeft => _t('Right To Left', '从右到左');
   String get readerMode => _t('Reader Mode', '阅读模式');
+  String get imageFit => _t('Image Fit', '图片适配');
+  String get originalSize => _t('Original', '原始大小');
   String get horizontal => _t('Horizontal', '横向');
   String get vertical => _t('Vertical', '纵向');
   String get twoPage => _t('Two Page', '双页');
   String get fitDirection => _t('Fit Direction', '适配方向');
   String get contain => _t('Contain', '完整显示');
+  String get stretch => _t('Stretch', '拉伸填充');
   String get width => _t('Width', '宽度');
   String get height => _t('Height', '高度');
   String get margins => _t('Margins', '边距');

@@ -19,10 +19,11 @@ class AdaptiveSliverGrid extends ConsumerWidget {
     return SliverLayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = switch (constraints.crossAxisExtent) {
-          final width when width >= LayoutBreakpoints.large => 10,
-          final width when width >= LayoutBreakpoints.expanded => 8,
-          final width when width >= LayoutBreakpoints.medium => 6,
-          final width when width >= LayoutBreakpoints.compact => 4,
+          final width when width >= LayoutBreakpoints.large => 12,
+          final width when width >= LayoutBreakpoints.expanded => 10,
+          final width when width >= LayoutBreakpoints.medium => 7,
+          final width when width >= LayoutBreakpoints.compact => 5,
+          final width when width >= 360 => 4,
           _ => 3,
         };
 
@@ -34,6 +35,8 @@ class AdaptiveSliverGrid extends ConsumerWidget {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             childAspectRatio: LayoutConstants.chapterCardAspectRatio,
+            mainAxisSpacing: LayoutConstants.smallerPadding,
+            crossAxisSpacing: LayoutConstants.smallerPadding,
           ),
           delegate: SliverChildBuilderDelegate(
             builder,

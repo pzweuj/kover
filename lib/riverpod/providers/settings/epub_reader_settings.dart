@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/experimental/persist.dart';
+import 'package:kover/models/epub_image_fit.dart';
 import 'package:kover/models/read_direction.dart';
 import 'package:kover/riverpod/repository/storage_repository.dart';
 import 'package:kover/utils/layout_constants.dart';
@@ -42,6 +43,7 @@ sealed class EpubReaderSettingsState with _$EpubReaderSettingsState {
     @Default(0.0) double wordSpacing,
     @Default(0.0) double letterSpacing,
     @Default(ReadDirection.leftToRight) ReadDirection readDirection,
+    @Default(EpubImageFit.fitWidth) EpubImageFit imageFit,
     @Default(true) bool highlightResumePoint,
     @Default(true) bool showProgressBar,
   }) = _EpubReaderSettingsState;
@@ -161,6 +163,13 @@ class EpubReaderSettings extends _$EpubReaderSettings {
       ),
     );
     log.i('set letterSpacing to ${state.value!.letterSpacing}');
+  }
+
+  Future<void> setImageFit(EpubImageFit value) async {
+    final current = await future;
+
+    state = AsyncData(current.copyWith(imageFit: value));
+    log.i('set imageFit to $value');
   }
 
   Future<void> setHighlightResumePoint(bool value) async {
