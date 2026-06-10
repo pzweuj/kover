@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/read_direction.dart';
 import 'package:kover/riverpod/providers/settings/epub_reader_settings.dart';
 import 'package:kover/utils/constants/kover_icons.dart';
@@ -38,24 +39,24 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                     spacing: LayoutConstants.largePadding,
                     children: [
                       Text(
-                        'Reader Settings',
+                        context.l10n.readerSettings,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       ChoiceOption(
-                        title: 'Reading Direction',
+                        title: context.l10n.readingDirection,
                         icon: settings.readDirection == .leftToRight
                             ? LucideIcons.chevronsRight
                             : LucideIcons.chevronsLeft,
                         value: settings.readDirection,
-                        options: const [
+                        options: [
                           ChoiceOptionEntry<ReadDirection>(
                             value: ReadDirection.leftToRight,
-                            label: 'Left To Right',
+                            label: context.l10n.leftToRight,
                             icon: LucideIcons.chevronsRight,
                           ),
                           ChoiceOptionEntry<ReadDirection>(
                             value: ReadDirection.rightToLeft,
-                            label: 'Right To Left',
+                            label: context.l10n.rightToLeft,
                             icon: LucideIcons.chevronsLeft,
                           ),
                         ],
@@ -68,7 +69,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                         },
                       ),
                       NumericOption(
-                        title: 'Font Size',
+                        title: context.l10n.fontSize,
                         icon: LucideIcons.aLargeSmallDir,
                         value: settings.fontSize,
                         min: EpubReaderSettingsLimits.fontSizeMin,
@@ -80,7 +81,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                             .setFontSize(newValue),
                       ),
                       NumericOption(
-                        title: 'Margins',
+                        title: context.l10n.margins,
                         icon: LucideIcons.panelLeftDashed,
                         value: settings.marginSize,
                         min: EpubReaderSettingsLimits.marginSizeMin,
@@ -93,7 +94,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       ),
 
                       NumericOption(
-                        title: 'Line Height',
+                        title: context.l10n.lineHeight,
                         icon: LucideIcons.listChevronsUpDown,
                         value: settings.lineHeight,
                         min: EpubReaderSettingsLimits.lineHeightMin,
@@ -105,7 +106,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       ),
                       NumericOption(
                         value: settings.wordSpacing,
-                        title: 'Word Spacing',
+                        title: context.l10n.wordSpacing,
                         min: EpubReaderSettingsLimits.wordSpacingMin,
                         max: EpubReaderSettingsLimits.wordSpacingMax,
                         step: EpubReaderSettingsLimits.wordSpacingStep,
@@ -115,7 +116,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                         icon: LucideIcons.listMinus,
                       ),
                       NumericOption(
-                        title: 'Letter Spacing',
+                        title: context.l10n.letterSpacing,
                         icon: LucideIcons.wholeWord,
                         value: settings.letterSpacing,
                         min: EpubReaderSettingsLimits.letterSpacingMin,
@@ -127,7 +128,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       ),
                       BooleanOption(
                         icon: LucideIcons.highlighter,
-                        title: 'Highlight Resume Paragraph',
+                        title: context.l10n.highlightResumeParagraph,
                         value: settings.highlightResumePoint,
                         onChanged: (value) async {
                           await ref
@@ -137,7 +138,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       ),
                       BooleanOption(
                         icon: KoverIcons.progressBar,
-                        title: 'Show Progress Bar',
+                        title: context.l10n.showProgressBar,
                         value: settings.showProgressBar,
                         onChanged: (value) async {
                           await ref
@@ -168,7 +169,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       onPressed: () async =>
                           await ref.read(provider.notifier).setDefault(),
                       icon: const Icon(LucideIcons.save),
-                      label: const Text('Set Defaults'),
+                      label: Text(context.l10n.setDefaults),
                     ),
                   ),
                   Expanded(
@@ -176,7 +177,7 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                       onPressed: () async =>
                           await ref.read(provider.notifier).reset(),
                       icon: const Icon(LucideIcons.rotateCcw),
-                      label: const Text('Reset'),
+                      label: Text(context.l10n.reset),
                     ),
                   ),
                 ],

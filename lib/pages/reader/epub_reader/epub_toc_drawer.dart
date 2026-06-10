@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/book_chapter_model.dart';
 import 'package:kover/riverpod/providers/book.dart';
 import 'package:kover/riverpod/providers/reader/reader_navigation.dart';
@@ -65,7 +66,7 @@ class EpubTocDrawer extends HookConsumerWidget {
                       horizontal: LayoutConstants.mediumPadding,
                     ),
                     child: Text(
-                      'Table of Contents',
+                      context.l10n.tableOfContents,
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                   ),

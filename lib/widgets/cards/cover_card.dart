@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -9,7 +10,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 class CoverCard extends ConsumerWidget {
   final String? title;
   final Icon? icon;
-  final String actionLabel;
+  final String? actionLabel;
   final Icon actionIcon;
   final Icon? actionDisabledIcon;
   final bool actionDisabled;
@@ -23,7 +24,7 @@ class CoverCard extends ConsumerWidget {
     super.key,
     this.title,
     this.icon,
-    this.actionLabel = 'Read',
+    this.actionLabel,
     this.actionIcon = const Icon(LucideIcons.bookOpen),
     this.actionDisabledIcon,
     this.actionDisabled = true,
@@ -80,14 +81,14 @@ class CoverCard extends ConsumerWidget {
                                     icon:
                                         actionDisabledIcon ??
                                         const Icon(LucideIcons.wifiOff),
-                                    label: FittedBox(child: Text(actionLabel)),
+                                    label: FittedBox(child: Text(actionLabel ?? context.l10n.read)),
                                     onPressed: null,
                                   ),
                                 ),
                               )
                             : FilledButton.icon(
                                 icon: actionIcon,
-                                label: FittedBox(child: Text(actionLabel)),
+                                label: FittedBox(child: Text(actionLabel ?? context.l10n.read)),
                                 onPressed: onActionTap,
                               ),
                       ),

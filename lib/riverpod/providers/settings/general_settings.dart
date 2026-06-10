@@ -11,6 +11,7 @@ part 'general_settings.g.dart';
 @freezed
 sealed class GeneralSettingsState with _$GeneralSettingsState {
   const factory GeneralSettingsState({
+    @Default('en') String localeCode,
     @Default(false) bool sendDiagnostics,
   }) = _GeneralSettingsState;
 
@@ -35,5 +36,11 @@ class GeneralSettings extends _$GeneralSettings {
     final current = await future;
     log.i('set sendDiagnostics to $value');
     state = AsyncData(current.copyWith(sendDiagnostics: value));
+  }
+
+  Future<void> setLocaleCode(String value) async {
+    final current = await future;
+    log.i('set localeCode to $value');
+    state = AsyncData(current.copyWith(localeCode: value));
   }
 }

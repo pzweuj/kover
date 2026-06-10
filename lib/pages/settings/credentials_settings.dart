@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/providers/auth.dart';
 import 'package:kover/riverpod/providers/server_settings.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
@@ -34,14 +35,14 @@ class CredentialsSettings extends HookConsumerWidget {
               spacing: LayoutConstants.mediumPadding,
               children: [
                 Text(
-                  'Credentials',
+                  context.l10n.credentials,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 TextField(
                   enabled: loginStatus != .loading,
                   controller: urlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Base URL',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.baseUrl,
                   ),
                 ),
                 TextField(
@@ -49,7 +50,7 @@ class CredentialsSettings extends HookConsumerWidget {
                   enabled: loginStatus != .loading,
                   controller: apiKeyController,
                   decoration: InputDecoration(
-                    labelText: 'API Key',
+                    labelText: context.l10n.apiKey,
                     suffixIcon: Padding(
                       padding: const EdgeInsetsGeometry.symmetric(
                         horizontal: LayoutConstants.smallPadding,
@@ -83,7 +84,7 @@ class CredentialsSettings extends HookConsumerWidget {
                               ),
                             );
                       },
-                      label: const Text('Save'),
+                      label: Text(context.l10n.save),
                       icon: const Icon(LucideIcons.save),
                     ),
                   ],

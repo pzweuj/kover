@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/providers/auth.dart';
 import 'package:kover/riverpod/providers/router.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
@@ -30,26 +31,26 @@ class LoginGuard extends ConsumerWidget {
               ),
               const SizedBox(height: LayoutConstants.smallPadding),
               Text(
-                'Not Signed In',
+                context.l10n.notSignedIn,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: LayoutConstants.smallerPadding),
-              const Padding(
-                padding: EdgeInsets.symmetric(
+              Padding(
+                padding: const EdgeInsets.symmetric(
                   horizontal: LayoutConstants.mediumPadding,
                 ),
                 child: Text(
-                  'No credentials configured. Please add your server URL and API key in Settings.',
+                  context.l10n.noCredentialsConfigured,
                   textAlign: TextAlign.center,
                 ),
               ),
               const SizedBox(height: LayoutConstants.smallPadding),
               FilledButton(
                 onPressed: () => const SettingsRoute().go(context),
-                child: const Text('Open Settings'),
+                child: Text(context.l10n.openSettings),
               ),
             ],
           ),
@@ -67,19 +68,19 @@ class LoginGuard extends ConsumerWidget {
               ),
               const SizedBox(height: LayoutConstants.smallPadding),
               Text(
-                'Connection Error',
+                context.l10n.connectionError,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: LayoutConstants.smallerPadding),
-              const Padding(
-                padding: EdgeInsets.symmetric(
+              Padding(
+                padding: const EdgeInsets.symmetric(
                   horizontal: LayoutConstants.mediumPadding,
                 ),
                 child: Text(
-                  'Failed to fetch user. Please check your credentials or try again.',
+                  context.l10n.failedToFetchUser,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -94,7 +95,7 @@ class LoginGuard extends ConsumerWidget {
                       size: LayoutConstants.smallIcon,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    label: const Text('Retry'),
+                    label: Text(context.l10n.retry),
                   ),
                   const SizedBox(height: LayoutConstants.smallPadding),
                   FilledButton.icon(
@@ -104,7 +105,7 @@ class LoginGuard extends ConsumerWidget {
                       size: LayoutConstants.smallIcon,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    label: const Text('Open Settings'),
+                    label: Text(context.l10n.openSettings),
                   ),
                 ],
               ),

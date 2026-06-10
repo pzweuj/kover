@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/home/collapsible_section.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
 import 'package:kover/riverpod/providers/series.dart';
@@ -57,7 +58,7 @@ class OnDeck extends ConsumerWidget {
 
     return AsyncSliver(
       asyncValue: onDeck,
-      data: (data) => CollapsibleSection(title: 'On Deck', series: data),
+      data: (data) => CollapsibleSection(title: context.l10n.onDeck, series: data),
     );
   }
 }
@@ -72,7 +73,7 @@ class RecentlyUpdated extends ConsumerWidget {
     return AsyncSliver(
       asyncValue: series,
       data: (data) =>
-          CollapsibleSection(title: 'Recently Updated', series: data),
+          CollapsibleSection(title: context.l10n.recentlyUpdated, series: data),
     );
   }
 }
@@ -86,7 +87,7 @@ class RecentlyAdded extends ConsumerWidget {
 
     return AsyncSliver(
       asyncValue: series,
-      data: (data) => CollapsibleSection(title: 'Recently Added', series: data),
+      data: (data) => CollapsibleSection(title: context.l10n.recentlyAdded, series: data),
     );
   }
 }

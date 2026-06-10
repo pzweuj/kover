@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/reader/epub_reader/epub_reader_controls.dart';
 import 'package:kover/pages/reader/image_reader/image_reader_controls.dart';
 import 'package:kover/pages/reader/overlay/page_slider.dart';
@@ -87,7 +88,7 @@ class ReaderSettingsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(LucideIcons.slidersHorizontal),
-      tooltip: 'Reader Settings',
+      tooltip: context.l10n.readerSettings,
       onPressed: () {
         showModalBottomSheet(
           context: context,

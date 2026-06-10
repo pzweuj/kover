@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/providers/chapter.dart';
 import 'package:kover/riverpod/providers/download.dart';
@@ -27,7 +28,7 @@ class DownloadQueuePage extends ConsumerWidget {
         physics: hasDls ? null : const NeverScrollableScrollPhysics(),
         slivers: [
           SliverAppBar.large(
-            title: const Text('Download Queue'),
+            title: Text(context.l10n.downloadQueue),
             actions: [
               if (hasDls) const CancellAllAction(),
             ],
@@ -56,7 +57,7 @@ class CancellAllAction extends ConsumerWidget {
       onPressed: () async {
         await ref.read(downloadManagerProvider.notifier).cancelAll();
       },
-      child: const Text('Cancel All'),
+      child: Text(context.l10n.cancelAll),
     );
   }
 }
@@ -71,8 +72,8 @@ class DownloadQueueList extends ConsumerWidget {
       asyncValue: queued,
       data: (data) {
         if (data.downloadQueue.isEmpty) {
-          return const SliverFillRemaining(
-            child: Center(child: Text('No downloads in queue')),
+          return SliverFillRemaining(
+            child: Center(child: Text(context.l10n.noDownloadsInQueue)),
           );
         }
         final queued = data.downloadQueue.toList();

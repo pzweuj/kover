@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/series_detail_page/series_info_background.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/lists/adaptive_sliver_app_bar.dart';
@@ -165,7 +166,7 @@ class ContinuePointButton extends ConsumerWidget {
                   mainAxisSize: .min,
                   children: [
                     Text(
-                      'Continue Reading',
+                      context.l10n.continueReading,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onPrimaryContainer,
                       ),

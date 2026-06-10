@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/settings/credentials_settings.dart';
 import 'package:kover/pages/settings/data_management_settings.dart';
 import 'package:kover/pages/settings/general_settings.dart';
@@ -11,14 +12,14 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Scaffold(
+    return Scaffold(
       extendBody: true,
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [
             SliverAppBar.large(
-              title: Text('Settings'),
+              title: Text(context.l10n.settings),
             ),
             SliverToBoxAdapter(child: CredentialsSettings()),
             SliverToBoxAdapter(child: GeneralSettings()),

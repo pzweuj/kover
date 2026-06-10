@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/reader/overlay/reader_controls.dart';
 import 'package:kover/pages/reader/overlay/reader_header.dart';
 import 'package:kover/riverpod/providers/reader.dart';
@@ -210,7 +211,7 @@ class ReaderOverlay extends HookConsumerWidget {
                     alignment: .bottomCenter,
                     child:
                         ChapterSnackbar(
-                              title: 'Previous: ${prevChapter.value?.title}',
+                              title: context.l10n.previousChapter(prevChapter.value?.title),
                               onNavigate: () {
                                 log.d(
                                   'Navigating to prev chapter ${prevChapter.value}',
@@ -240,7 +241,7 @@ class ReaderOverlay extends HookConsumerWidget {
                     alignment: .bottomCenter,
                     child:
                         ChapterSnackbar(
-                              title: 'Next: ${nextChapter.value?.title}',
+                              title: context.l10n.nextChapter(nextChapter.value?.title),
                               onNavigate: () {
                                 log.d(
                                   'Navigating to next chapter ${nextChapter.value}',
@@ -404,10 +405,10 @@ class ChapterSnackbar extends StatelessWidget {
                 ),
               ),
               if (onDismiss != null)
-                TextButton(onPressed: onDismiss, child: const Text('Dismiss')),
+                TextButton(onPressed: onDismiss, child: Text(context.l10n.dismiss)),
               FilledButton(
                 onPressed: onNavigate,
-                child: const Text('Go'),
+                child: Text(context.l10n.go),
               ),
             ],
           ),

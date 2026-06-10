@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/providers/package_info.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/util/async_value.dart';
@@ -21,8 +22,10 @@ class VersionLabel extends ConsumerWidget {
             showAboutDialog(
               context: context,
               applicationName: info.appName,
-              applicationVersion:
-                  'Version: ${info.version} (${info.buildNumber})',
+              applicationVersion: context.l10n.version(
+                info.version,
+                info.buildNumber,
+              ),
               applicationIcon: Container(
                 width: LayoutConstants.largestIcon,
                 height: LayoutConstants.largestIcon,
@@ -45,7 +48,7 @@ class VersionLabel extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        const Text('GitHub: '),
+                        Text(context.l10n.github),
                         InkWell(
                           borderRadius: BorderRadius.circular(
                             LayoutConstants.smallBorderRadius,
@@ -71,7 +74,7 @@ class VersionLabel extends ConsumerWidget {
                       ],
                     ),
 
-                    Text('Made with ❤️', style: theme.textTheme.labelSmall),
+                    Text(context.l10n.madeWithLove, style: theme.textTheme.labelSmall),
                   ],
                 ),
               ],

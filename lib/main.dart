@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/providers/router.dart';
+import 'package:kover/riverpod/providers/settings/general_settings.dart';
 import 'package:kover/riverpod/providers/theme.dart';
 import 'package:kover/riverpod/repository/sentry_repository.dart';
 import 'package:kover/sync/background.dart';
@@ -29,17 +32,32 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
+    final generalSettings = ref.watch(generalSettingsProvider);
     return EagerProviders(
       child: BreakpointsWatcher(
         child: Async(
           asyncValue: theme,
-          data: (theme) => MaterialApp.router(
-            title: 'Kover',
-            debugShowCheckedModeBanner: false,
-            theme: theme.lightTheme,
-            darkTheme: theme.darkTheme,
-            themeMode: theme.mode,
-            routerConfig: ref.watch(routerProvider),
+          data: (theme) => Async(
+            asyncValue: generalSettings,
+            data: (generalSettings) => MaterialApp.router(
+              title: 'Kover',
+              debugShowCheckedModeBanner: false,
+              locale: AppLocalizations.localeFromCode(
+                generalSettings.localeCode,
+              ),
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+              ],
+              theme: theme.lightTheme,
+              darkTheme: theme.darkTheme,
+              themeMode: theme.mode,
+              routerConfig: ref.watch(routerProvider),
+            ),
+            loading: () => const SizedBox.shrink(),
           ),
           loading: () => const SizedBox.shrink(),
         ),

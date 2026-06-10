@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -93,7 +94,7 @@ class SyncMenuOverlay extends ConsumerWidget {
           syncing: (phases) => [
             for (final phase in phases)
               (
-                label: _phaseLabel(phase),
+                label: _phaseLabel(context, phase),
               ),
           ],
         ) ??
@@ -113,7 +114,7 @@ class SyncMenuOverlay extends ConsumerWidget {
                   vertical: LayoutConstants.smallPadding,
                 ),
                 child: Text(
-                  'No active sync operations',
+                  context.l10n.noActiveSyncOperations,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -144,19 +145,21 @@ class SyncMenuOverlay extends ConsumerWidget {
   }
 }
 
-String _phaseLabel(SyncPhase phase) {
+String _phaseLabel(BuildContext context, SyncPhase phase) {
+  final l10n = context.l10n;
+
   return phase.when(
-    allSeries: () => 'Syncing all series',
-    metadata: () => 'Syncing metadata',
-    recentlyAdded: () => 'Syncing recently added',
-    recentlyUpdated: () => 'Syncing recently updated',
-    libraries: () => 'Syncing libraries',
-    progress: () => 'Syncing progress',
-    covers: () => 'Syncing covers',
-    collections: () => 'Syncing collections',
-    readingLists: () => 'Syncing reading lists',
-    refreshMetadata: (seriesId) => 'Refreshing metadata for series $seriesId',
-    refreshCovers: (seriesId) => 'Refreshing covers for series $seriesId',
-    refreshServerSettings: () => 'Refreshing server settings',
+    allSeries: () => l10n.syncingAllSeries,
+    metadata: () => l10n.syncingMetadata,
+    recentlyAdded: () => l10n.syncingRecentlyAdded,
+    recentlyUpdated: () => l10n.syncingRecentlyUpdated,
+    libraries: () => l10n.syncingLibraries,
+    progress: () => l10n.syncingProgress,
+    covers: () => l10n.syncingCovers,
+    collections: () => l10n.syncingCollections,
+    readingLists: () => l10n.syncingReadingLists,
+    refreshMetadata: (seriesId) => l10n.refreshingMetadataForSeries(seriesId),
+    refreshCovers: (seriesId) => l10n.refreshingCoversForSeries(seriesId),
+    refreshServerSettings: () => l10n.refreshingServerSettings,
   );
 }

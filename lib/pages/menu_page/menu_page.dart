@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/menu_page/app_list_tile.dart';
 import 'package:kover/pages/menu_page/sliver_libraries.dart';
 import 'package:kover/pages/menu_page/sliver_section.dart';
@@ -22,6 +23,8 @@ class MenuPage extends ConsumerWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(syncManagerProvider.notifier).syncLibraries();
     });
+
+    final l10n = context.l10n;
 
     final loggedIn = ref.watch(
       currentUserProvider.select((state) => state.hasValue),
@@ -48,7 +51,7 @@ class MenuPage extends ConsumerWidget {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: AppListTile(
-                    title: 'All Series',
+                    title: l10n.allSeries,
                     icon: const Icon(LucideIcons.list),
                     onTap: () => const AllSeriesRoute().push(context),
                   ),
@@ -61,7 +64,7 @@ class MenuPage extends ConsumerWidget {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: AppListTile(
-                    title: 'Collections',
+                    title: l10n.collections,
                     icon: const Icon(KoverIcons.collection),
                     onTap: () => const CollectionsRoute().push(context),
                   ),
@@ -74,16 +77,16 @@ class MenuPage extends ConsumerWidget {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: AppListTile(
-                    title: 'Reading Lists',
+                    title: l10n.readingLists,
                     icon: const Icon(KoverIcons.readingList),
                     onTap: () => const ReadingListsRoute().push(context),
                   ),
                 ),
               ),
-              const SliverSection(title: 'Libraries'),
+              SliverSection(title: l10n.libraries),
               const SliverLibraries(),
             ],
-            const SliverSection(title: 'More'),
+            SliverSection(title: l10n.more),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(
                 vertical: LayoutConstants.smallerPadding,
@@ -91,7 +94,7 @@ class MenuPage extends ConsumerWidget {
               ),
               sliver: SliverToBoxAdapter(
                 child: AppListTile(
-                  title: 'Download Queue',
+                  title: l10n.downloadQueue,
                   icon: isDownloading
                       ? const Icon(LucideIcons.refreshCw)
                             .animate(
@@ -110,7 +113,7 @@ class MenuPage extends ConsumerWidget {
               ),
               sliver: SliverToBoxAdapter(
                 child: AppListTile(
-                  title: 'Settings',
+                  title: l10n.settings,
                   icon: const Icon(LucideIcons.settings),
                   onTap: () => const SettingsRoute().push(context),
                 ),

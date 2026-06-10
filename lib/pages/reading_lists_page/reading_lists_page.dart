@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/enums/sort_direction.dart';
 import 'package:kover/models/reading_list_model.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
@@ -34,7 +35,7 @@ class ReadingListsPage extends HookConsumerWidget {
         keyboardDismissBehavior: .onDrag,
         slivers: [
           SliverAppBar.large(
-            title: const Text('Reading Lists'),
+            title: Text(context.l10n.readingLists),
             actionsPadding: const EdgeInsets.symmetric(
               horizontal: LayoutConstants.smallPadding,
             ),
@@ -45,7 +46,7 @@ class ReadingListsPage extends HookConsumerWidget {
                       ? KoverIcons.ascending
                       : KoverIcons.descending,
                 ),
-                menu: _menu(sortDirection),
+                menu: _menu(context, sortDirection),
               ),
             ],
           ),
@@ -114,13 +115,15 @@ class ReadingListsPage extends HookConsumerWidget {
   }
 
   ContextMenu _menu(
+    BuildContext context,
     ValueNotifier<SortDirection> sortDirection,
   ) {
+    final l10n = context.l10n;
     return ContextMenu(
       entries: <ContextMenuEntry>[
-        const MenuHeader(text: 'Direction'),
+        MenuHeader(text: l10n.direction),
         MenuItem(
-          label: const Text('Ascending'),
+          label: Text(l10n.ascending),
           icon: _getItemIcon(
             sortDirection.value == .ascending,
           ),
@@ -129,7 +132,7 @@ class ReadingListsPage extends HookConsumerWidget {
           },
         ),
         MenuItem(
-          label: const Text('Descending'),
+          label: Text(l10n.descending),
           icon: _getItemIcon(
             sortDirection.value == .descending,
           ),

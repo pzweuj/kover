@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/enums/sort_direction.dart';
 import 'package:kover/riverpod/providers/series.dart';
 import 'package:kover/utils/layout_constants.dart';
@@ -31,13 +32,13 @@ class VolumesPage extends HookConsumerWidget {
           keyboardDismissBehavior: .onDrag,
           slivers: [
             SliverAppBar.large(
-              title: const Text('Volumes'),
+              title: Text(context.l10n.volumes),
               actionsPadding: const EdgeInsets.symmetric(
                 horizontal: LayoutConstants.smallPadding,
               ),
               actions: [
                 ContextMenuButton(
-                  menu: _getMenu(hideRead, sortDirection),
+                  menu: _getMenu(context, hideRead, sortDirection),
                   icon: Icon(
                     sortDirection.value == .ascending
                         ? LucideIcons.arrowDownNarrowWide
@@ -71,30 +72,33 @@ class VolumesPage extends HookConsumerWidget {
   }
 
   ContextMenu<dynamic> _getMenu(
+    BuildContext context,
     ValueNotifier<bool> hideRead,
     ValueNotifier<SortDirection> sortDirection,
   ) {
+    final l10n = context.l10n;
+
     return ContextMenu(
       entries: [
-        const MenuHeader(text: 'Filter'),
+        MenuHeader(text: l10n.filter),
         MenuItem(
           icon: hideRead.value ? const Icon(LucideIcons.check) : null,
-          label: const Text('Hide Read'),
+          label: Text(l10n.hideRead),
           onSelected: (_) => hideRead.value = !hideRead.value,
         ),
-        const MenuHeader(text: 'Sort Direction'),
+        MenuHeader(text: l10n.sortDirection),
         MenuItem(
           icon: sortDirection.value == SortDirection.ascending
               ? const Icon(LucideIcons.check)
               : null,
-          label: const Text('Ascending'),
+          label: Text(l10n.ascending),
           onSelected: (_) => sortDirection.value = SortDirection.ascending,
         ),
         MenuItem(
           icon: sortDirection.value == SortDirection.descending
               ? const Icon(LucideIcons.check)
               : null,
-          label: const Text('Descending'),
+          label: Text(l10n.descending),
           onSelected: (_) => sortDirection.value = SortDirection.descending,
         ),
       ],

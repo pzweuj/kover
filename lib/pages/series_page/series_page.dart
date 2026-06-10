@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/enums/series_sort_option.dart';
 import 'package:kover/models/enums/sort_direction.dart';
 import 'package:kover/riverpod/providers/collections.dart';
@@ -20,7 +21,7 @@ class AllSeriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SeriesPage(title: 'All Series');
+    return SeriesPage(title: context.l10n.allSeries);
   }
 }
 
@@ -132,7 +133,7 @@ class SeriesPage extends HookConsumerWidget {
                       ? LucideIcons.arrowDownNarrowWide
                       : LucideIcons.arrowDownWideNarrow,
                 ),
-                menu: _menu(sortOption, sortDirection),
+                menu: _menu(context, sortOption, sortDirection),
               ),
             ],
           ),
@@ -168,43 +169,45 @@ class SeriesPage extends HookConsumerWidget {
   }
 
   ContextMenu _menu(
+    BuildContext context,
     ValueNotifier<SeriesSortOption> sortOption,
     ValueNotifier<SortDirection> sortDirection,
   ) {
+    final l10n = context.l10n;
     return ContextMenu(
       entries: <ContextMenuEntry>[
-        const MenuHeader(text: 'Sort by'),
+        MenuHeader(text: l10n.sortBy),
         MenuItem(
-          label: const Text('Name'),
+          label: Text(l10n.name),
           icon: _getItemIcon(sortOption.value == .name),
           onSelected: (_) {
             sortOption.value = .name;
           },
         ),
         MenuItem(
-          label: const Text('Date Added'),
+          label: Text(l10n.dateAdded),
           icon: _getItemIcon(sortOption.value == .dateAdded),
           onSelected: (_) {
             sortOption.value = .dateAdded;
           },
         ),
         MenuItem(
-          label: const Text('Last Modified'),
+          label: Text(l10n.lastModified),
           icon: _getItemIcon(sortOption.value == .lastModified),
           onSelected: (_) {
             sortOption.value = .lastModified;
           },
         ),
-        const MenuHeader(text: 'Direction'),
+        MenuHeader(text: l10n.direction),
         MenuItem(
-          label: const Text('Ascending'),
+          label: Text(l10n.ascending),
           icon: _getItemIcon(sortDirection.value == .ascending),
           onSelected: (_) {
             sortDirection.value = .ascending;
           },
         ),
         MenuItem(
-          label: const Text('Descending'),
+          label: Text(l10n.descending),
           icon: _getItemIcon(sortDirection.value == .descending),
           onSelected: (_) {
             sortDirection.value = .descending;

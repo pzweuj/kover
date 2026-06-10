@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/pages/menu_page/app_list_tile.dart';
 import 'package:kover/pages/series_detail_page/series_app_bar.dart';
 import 'package:kover/riverpod/providers/router.dart';
@@ -43,27 +44,39 @@ class SeriesDetailPage extends HookConsumerWidget {
                     children: [
                       if (detailsData.specials.isNotEmpty)
                         AppListTile(
-                          title: 'Specials (${detailsData.specials.length})',
+                          title: context.l10n.countLabel(
+                            context.l10n.specials,
+                            detailsData.specials.length,
+                          ),
                           onTap: () => SpecialsRoute(seriesId: seriesId).push(
                             context,
                           ),
                         ),
                       if (detailsData.storyline.isNotEmpty)
                         AppListTile(
-                          title: 'Storyline (${detailsData.storyline.length})',
+                          title: context.l10n.countLabel(
+                            context.l10n.storyline,
+                            detailsData.storyline.length,
+                          ),
                           onTap: () => StorylineRoute(
                             seriesId: seriesId,
                           ).push(context),
                         ),
                       if (detailsData.volumes.isNotEmpty)
                         AppListTile(
-                          title: 'Volumes (${detailsData.volumes.length})',
+                          title: context.l10n.countLabel(
+                            context.l10n.volumes,
+                            detailsData.volumes.length,
+                          ),
                           onTap: () =>
                               VolumesRoute(seriesId: seriesId).push(context),
                         ),
                       if (detailsData.chapters.isNotEmpty)
                         AppListTile(
-                          title: 'Chapters (${detailsData.chapters.length})',
+                          title: context.l10n.countLabel(
+                            context.l10n.chapters,
+                            detailsData.chapters.length,
+                          ),
                           onTap: () =>
                               ChaptersRoute(seriesId: seriesId).push(context),
                         ),
@@ -109,7 +122,7 @@ class _Genres extends ConsumerWidget {
         spacing: LayoutConstants.smallPadding,
         children: [
           Text(
-            'Genres',
+            context.l10n.genres,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           Wrap(

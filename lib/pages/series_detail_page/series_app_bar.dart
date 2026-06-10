@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/series_model.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
@@ -204,7 +205,7 @@ class _Metadata extends ConsumerWidget {
             alignment: .spaceBetween,
             children: [
               LimitedList(
-                title: 'Writers',
+                title: context.l10n.writers,
                 items: metadata.writers
                     .map(
                       (w) => Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/chapter_model.dart';
 import 'package:kover/models/series_model.dart';
 import 'package:kover/models/volume_model.dart';
@@ -84,7 +85,7 @@ class SearchButton extends HookConsumerWidget {
         return [
           if (seriesResults.isNotEmpty) ...[
             Text(
-              'Series',
+              context.l10n.series,
               style: theme.textTheme.headlineSmall,
             ),
             ...seriesResults.map(
@@ -96,7 +97,7 @@ class SearchButton extends HookConsumerWidget {
           ],
           if (volumesResults.isNotEmpty) ...[
             Text(
-              'Volumes',
+              context.l10n.volumes,
               style: theme.textTheme.headlineSmall,
             ),
             ...volumesResults.map(
@@ -108,7 +109,7 @@ class SearchButton extends HookConsumerWidget {
           ],
           if (chaptersResults.isNotEmpty) ...[
             Text(
-              'Chapters',
+              context.l10n.chapters,
               style: theme.textTheme.headlineSmall,
             ),
             ...chaptersResults.map(

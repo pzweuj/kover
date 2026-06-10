@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/utils/extensions/string.dart';
 import 'package:kover/utils/layout_constants.dart';
 
@@ -30,13 +31,13 @@ class Summary extends HookConsumerWidget {
           crossAxisAlignment: .center,
           children: [
             Text(
-              'Summary',
+              context.l10n.summary,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             TextButton(
               onPressed: () => collapsed.value = !collapsed.value,
               child: Text(
-                collapsed.value ? 'Show More' : 'Show Less',
+                collapsed.value ? context.l10n.showMore : context.l10n.showLess,
               ),
             ),
           ],

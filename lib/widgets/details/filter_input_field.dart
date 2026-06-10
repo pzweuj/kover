@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FilterInputField extends HookWidget {
@@ -16,7 +17,7 @@ class FilterInputField extends HookWidget {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        hintText: 'Filter',
+        hintText: context.l10n.filter,
         prefixIcon: const Icon(LucideIcons.listFilter),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(

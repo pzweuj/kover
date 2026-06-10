@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/riverpod/providers/settings/general_settings.dart';
 import 'package:kover/riverpod/providers/theme.dart' hide Theme;
 import 'package:kover/utils/constants/kover_icons.dart';
@@ -16,6 +17,7 @@ class GeneralSettings extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
     final generalSettings = ref.watch(generalSettingsProvider);
+    final l10n = context.l10n;
 
     return Card(
       margin: LayoutConstants.mediumEdgeInsets,
@@ -29,26 +31,26 @@ class GeneralSettings extends ConsumerWidget {
             spacing: LayoutConstants.largePadding,
             children: [
               Text(
-                'General',
+                l10n.general,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               ChoiceOption(
-                title: 'Theme Mode',
+                title: l10n.themeMode,
                 icon: LucideIcons.palette,
-                options: const [
+                options: [
                   ChoiceOptionEntry(
                     value: ThemeMode.system,
-                    label: 'System',
+                    label: l10n.system,
                     icon: LucideIcons.sunMoon,
                   ),
                   ChoiceOptionEntry(
                     value: ThemeMode.light,
-                    label: 'Light',
+                    label: l10n.light,
                     icon: LucideIcons.sun,
                   ),
                   ChoiceOptionEntry(
                     value: ThemeMode.dark,
-                    label: 'Dark',
+                    label: l10n.dark,
                     icon: LucideIcons.moon,
                   ),
                 ],
@@ -58,7 +60,7 @@ class GeneralSettings extends ConsumerWidget {
                 },
               ),
               BooleanOption(
-                title: 'Outlined Theme',
+                title: l10n.outlinedTheme,
                 icon: LucideIcons.squareDashed,
                 value: theme.outlined,
                 onChanged: (value) =>
@@ -66,18 +68,37 @@ class GeneralSettings extends ConsumerWidget {
               ),
               Async(
                 asyncValue: generalSettings,
-                data: (generalSettings) => BooleanOption(
-                  title: 'Send anonymous crash reports and diagnostics',
-                  icon: KoverIcons.analytics,
-                  description:
-                      'Help improve the app by sending anonymous error and '
-                      'performance statistics. The data does not contain any '
-                      'personal information and is uniquely used to improve '
-                      'the app.',
-                  value: generalSettings.sendDiagnostics,
-                  onChanged: (value) => ref
-                      .read(generalSettingsProvider.notifier)
-                      .setSendDiagnostics(value),
+                data: (generalSettings) => Column(
+                  spacing: LayoutConstants.largePadding,
+                  children: [
+                    ChoiceOption<String>(
+                      title: l10n.language,
+                      icon: LucideIcons.languages,
+                      options: [
+                        ChoiceOptionEntry(
+                          value: 'en',
+                          label: l10n.english,
+                        ),
+                        ChoiceOptionEntry(
+                          value: 'zh',
+                          label: l10n.chinese,
+                        ),
+                      ],
+                      value: generalSettings.localeCode,
+                      onChanged: (value) => ref
+                          .read(generalSettingsProvider.notifier)
+                          .setLocaleCode(value),
+                    ),
+                    BooleanOption(
+                      title: l10n.anonymousDiagnostics,
+                      icon: KoverIcons.analytics,
+                      description: l10n.anonymousDiagnosticsDescription,
+                      value: generalSettings.sendDiagnostics,
+                      onChanged: (value) => ref
+                          .read(generalSettingsProvider.notifier)
+                          .setSendDiagnostics(value),
+                    ),
+                  ],
                 ),
               ),
             ],
