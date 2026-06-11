@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:chopper/chopper.dart';
 import 'package:http/http.dart' as http;
 import 'package:kover/api/openapi.swagger.dart';
+import 'package:kover/riverpod/providers/network_switch.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -140,19 +139,6 @@ class FallbackHttpClient extends http.BaseClient {
     copy.headers.addAll(request.headers);
 
     return copy;
-  }
-}
-
-@Riverpod(keepAlive: true)
-class NetworkSwitchNotifier extends _$NetworkSwitchNotifier {
-  @override
-  String build() => '';
-
-  void notify(String from, String to) {
-    state = '$from → $to';
-    Timer(const Duration(seconds: 1), () {
-      state = '';
-    });
   }
 }
 
