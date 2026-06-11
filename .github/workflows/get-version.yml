@@ -19,10 +19,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - name: Get version from pubspec
+      - name: Get version from pubspec and tags
         id: version
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d'+' -f1)
+          BASE_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d'+' -f1)
+          MAJOR=$(echo "$BASE_VERSION" | cut -d'.' -f1)
+          MINOR=$(echo "$BASE_VERSION" | cut -d'.' -f2)
+          LATEST_PATCH=$(git tag -l "${MAJOR}.${MINOR}.*" | sort -V | tail -1 | rev | cut -d'.' -f1 | rev)
+          if [ -z "$LATEST_PATCH" ]; then
+            PATCH=0
+          else
+            PATCH=$((LATEST_PATCH + 1))
+          fi
+          VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "build_number=${{ github.run_number }}" >> $GITHUB_OUTPUT
