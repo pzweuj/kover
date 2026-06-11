@@ -216,6 +216,8 @@ class _Page extends HookConsumerWidget {
 
                       return NotificationListener<ScrollNotification>(
                         onNotification: (notification) {
+                          if (!outerController.hasClients) return false;
+
                           if (notification is OverscrollNotification) {
                             outerController.jumpTo(
                               (outerController.offset + notification.overscroll)
@@ -226,6 +228,24 @@ class _Page extends HookConsumerWidget {
                             );
                           }
 
+                          if (notification is ScrollEndNotification) {
+                            final velocity =
+                                notification.dragDetails?.primaryVelocity ?? 0;
+                            final position = outerController.position;
+                            final metrics = notification.metrics;
+                            final atBoundary =
+                                (velocity > 0 &&
+                                    metrics.pixels <=
+                                        metrics.minScrollExtent) ||
+                                (velocity < 0 &&
+                                    metrics.pixels >= metrics.maxScrollExtent);
+
+                            if (position is ScrollPositionWithSingleContext &&
+                                atBoundary) {
+                              position.goBallistic(-velocity);
+                            }
+                          }
+
                           return false;
                         },
                         child: PageView.builder(
@@ -233,7 +253,9 @@ class _Page extends HookConsumerWidget {
                           allowImplicitScrolling: true,
                           pageSnapping: true,
                           itemCount: count,
-                          physics: const ClampingScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: ClampingScrollPhysics(),
+                          ),
                           onPageChanged: (newPage) {
                             if (navState.page != page) return;
 
