@@ -10,7 +10,17 @@ class NetworkSwitchNotifier {
   final _controller = StreamController<String>.broadcast();
   Stream<String> get stream => _controller.stream;
 
+  /// Minimum interval between notifications to prevent spam.
+  static const _debounceDuration = Duration(seconds: 30);
+  DateTime? _lastNotifyTime;
+
   void notify(String from, String to) {
+    final now = DateTime.now();
+    if (_lastNotifyTime != null &&
+        now.difference(_lastNotifyTime!) < _debounceDuration) {
+      return; // Throttle: too soon since last notification
+    }
+    _lastNotifyTime = now;
     _controller.add('$from → $to');
   }
 }

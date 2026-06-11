@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chopper/chopper.dart';
 import 'package:http/http.dart' as http;
 import 'package:kover/api/openapi.swagger.dart';
@@ -37,59 +39,101 @@ class FallbackHttpClient extends http.BaseClient {
   final http.Client _inner;
   final void Function(String from, String to)? onFallback;
 
+  /// Whether currently using fallback URL.
+  bool _switchedToFallback = false;
+
+  /// Periodic timer for probing primary network recovery.
+  Timer? _recoveryTimer;
+
+  /// How often to probe whether primary is back.
+  static const _recoveryInterval = Duration(minutes: 15);
+
   FallbackHttpClient({
     required this.primaryBaseUrl,
     this.fallbackBaseUrl,
     this.primaryTimeout = const Duration(seconds: 8),
     this.onFallback,
     http.Client? inner,
-  }) : _inner = inner ?? http.Client();
+  }) : _inner = inner ?? http.Client() {
+    if (fallbackBaseUrl != null) {
+      _recoveryTimer = Timer.periodic(_recoveryInterval, (_) => _probePrimary());
+    }
+  }
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final fallbackRequest = _fallbackRequestFor(request);
+    final fallbackBaseUrl = this.fallbackBaseUrl;
 
+    // Already switched to fallback — use it directly, no retry of primary.
+    if (_switchedToFallback && fallbackBaseUrl != null) {
+      final fallbackRequest = _copyRequest(
+        request,
+        _replaceBaseUrl(request.url, from: primaryBaseUrl, to: fallbackBaseUrl),
+      );
+      return _inner.send(fallbackRequest ?? request);
+    }
+
+    // No fallback configured — just send normally.
+    if (fallbackBaseUrl == null) {
+      return _inner.send(request);
+    }
+
+    // Try primary with timeout; on failure, switch to fallback permanently.
     try {
-      final response = fallbackRequest == null
-          ? await _inner.send(request)
-          : await _inner.send(request).timeout(primaryTimeout);
-      if (fallbackRequest != null && _shouldRetryStatus(response.statusCode)) {
+      final response = await _inner.send(request).timeout(primaryTimeout);
+      if (_shouldRetryStatus(response.statusCode)) {
         await response.stream.drain<void>();
-        onFallback?.call(primaryBaseUrl.host, fallbackBaseUrl!.host);
-        return _inner.send(fallbackRequest);
+        _switchToFallback(request, fallbackBaseUrl);
+        return _sendFallback(request, fallbackBaseUrl);
       }
-
       return response;
     } catch (_) {
-      if (fallbackRequest == null) rethrow;
-      onFallback?.call(primaryBaseUrl.host, fallbackBaseUrl!.host);
-      return _inner.send(fallbackRequest);
+      _switchToFallback(request, fallbackBaseUrl);
+      return _sendFallback(request, fallbackBaseUrl);
+    }
+  }
+
+  void _switchToFallback(http.BaseRequest request, Uri fallbackBaseUrl) {
+    _switchedToFallback = true;
+    onFallback?.call(primaryBaseUrl.host, fallbackBaseUrl.host);
+  }
+
+  Future<http.StreamedResponse> _sendFallback(
+    http.BaseRequest request,
+    Uri fallbackBaseUrl,
+  ) {
+    final fallbackRequest = _copyRequest(
+      request,
+      _replaceBaseUrl(request.url, from: primaryBaseUrl, to: fallbackBaseUrl),
+    );
+    return _inner.send(fallbackRequest ?? request);
+  }
+
+  /// Silently probe whether primary is reachable again.
+  /// If yes, switch back to primary and notify.
+  Future<void> _probePrimary() async {
+    if (!_switchedToFallback) return;
+
+    try {
+      final probeUri = primaryBaseUrl.replace(path: '${primaryBaseUrl.path}/api/health');
+      final response = await _inner
+          .head(probeUri)
+          .timeout(primaryTimeout);
+      if (!_shouldRetryStatus(response.statusCode)) {
+        // Primary is back!
+        _switchedToFallback = false;
+        onFallback?.call(fallbackBaseUrl!.host, primaryBaseUrl.host);
+      }
+    } catch (_) {
+      // Primary still down, stay on fallback.
     }
   }
 
   @override
   void close() {
+    _recoveryTimer?.cancel();
     _inner.close();
     super.close();
-  }
-
-  http.BaseRequest? _fallbackRequestFor(http.BaseRequest request) {
-    final fallbackBaseUrl = this.fallbackBaseUrl;
-    if (fallbackBaseUrl == null || !_isPrimaryUrl(request.url)) {
-      return null;
-    }
-
-    return _copyRequest(
-      request,
-      _replaceBaseUrl(request.url, from: primaryBaseUrl, to: fallbackBaseUrl),
-    );
-  }
-
-  bool _isPrimaryUrl(Uri uri) {
-    return uri.scheme == primaryBaseUrl.scheme &&
-        uri.host == primaryBaseUrl.host &&
-        uri.port == primaryBaseUrl.port &&
-        uri.path.startsWith(primaryBaseUrl.path);
   }
 
   bool _shouldRetryStatus(int statusCode) {
