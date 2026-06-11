@@ -74,7 +74,10 @@ class VersionLabel extends ConsumerWidget {
                       ],
                     ),
 
-                    Text(context.l10n.madeWithLove, style: theme.textTheme.labelSmall),
+                    Text(
+                      context.l10n.madeWithLove,
+                      style: theme.textTheme.labelSmall,
+                    ),
                   ],
                 ),
               ],

@@ -46,9 +46,7 @@ class CoverCard extends ConsumerWidget {
             Expanded(
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: coverImage,
-                  ),
+                  Positioned.fill(child: coverImage),
                   if (progress <= 0)
                     Align(
                       alignment: .topRight,
@@ -81,14 +79,20 @@ class CoverCard extends ConsumerWidget {
                                     icon:
                                         actionDisabledIcon ??
                                         const Icon(LucideIcons.wifiOff),
-                                    label: FittedBox(child: Text(actionLabel ?? context.l10n.read)),
+                                    label: FittedBox(
+                                      child: Text(
+                                        actionLabel ?? context.l10n.read,
+                                      ),
+                                    ),
                                     onPressed: null,
                                   ),
                                 ),
                               )
                             : FilledButton.icon(
                                 icon: actionIcon,
-                                label: FittedBox(child: Text(actionLabel ?? context.l10n.read)),
+                                label: FittedBox(
+                                  child: Text(actionLabel ?? context.l10n.read),
+                                ),
                                 onPressed: onActionTap,
                               ),
                       ),
@@ -104,9 +108,7 @@ class CoverCard extends ConsumerWidget {
                 ],
               ),
             ),
-            LinearProgressIndicator(
-              value: progress.clamp(0.0, 1.0),
-            ),
+            LinearProgressIndicator(value: progress.clamp(0.0, 1.0)),
             if (title != null)
               Padding(
                 padding: LayoutConstants.smallEdgeInsets,
@@ -116,10 +118,7 @@ class CoverCard extends ConsumerWidget {
                   children: [
                     ?icon,
                     Expanded(
-                      child: Text(
-                        title!,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      child: Text(title!, overflow: TextOverflow.ellipsis),
                     ),
                   ],
                 ),

@@ -101,9 +101,9 @@ class EpubReaderSettingsBottomSheet extends ConsumerWidget {
                           ),
                         ],
                         onChanged: (newValue) async {
-                          await ref.read(provider.notifier).setImageFit(
-                            newValue,
-                          );
+                          await ref
+                              .read(provider.notifier)
+                              .setImageFit(newValue);
                         },
                       ),
                       NumericOption(

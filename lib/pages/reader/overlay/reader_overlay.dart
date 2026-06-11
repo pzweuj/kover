@@ -15,11 +15,7 @@ import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/utils/logging.dart';
 import 'package:kover/widgets/util/async_value.dart';
 
-enum ShowSnackbar {
-  previous,
-  next,
-  none,
-}
+enum ShowSnackbar { previous, next, none }
 
 class NextPageIntent extends Intent {
   const NextPageIntent();
@@ -152,18 +148,14 @@ class ReaderOverlay extends HookConsumerWidget {
                                 seriesId: seriesId,
                                 chapterId: chapterId,
                               )
-                              .animate(
-                                target: uiVisible.value ? 0.0 : 1.0,
-                              )
+                              .animate(target: uiVisible.value ? 0.0 : 1.0)
                               .fadeIn(duration: 200.ms)
                         else if (showProgressBar)
                           ReaderProgress(
                                 seriesId: seriesId,
                                 chapterId: chapterId,
                               )
-                              .animate(
-                                target: uiVisible.value ? 0.0 : 1.0,
-                              )
+                              .animate(target: uiVisible.value ? 0.0 : 1.0)
                               .fadeIn(duration: 200.ms),
                       ],
                     ),
@@ -211,7 +203,9 @@ class ReaderOverlay extends HookConsumerWidget {
                     alignment: .bottomCenter,
                     child:
                         ChapterSnackbar(
-                              title: context.l10n.previousChapter(prevChapter.value?.title),
+                              title: context.l10n.previousChapter(
+                                prevChapter.value?.title,
+                              ),
                               onNavigate: () {
                                 log.d(
                                   'Navigating to prev chapter ${prevChapter.value}',
@@ -241,7 +235,9 @@ class ReaderOverlay extends HookConsumerWidget {
                     alignment: .bottomCenter,
                     child:
                         ChapterSnackbar(
-                              title: context.l10n.nextChapter(nextChapter.value?.title),
+                              title: context.l10n.nextChapter(
+                                nextChapter.value?.title,
+                              ),
                               onNavigate: () {
                                 log.d(
                                   'Navigating to next chapter ${nextChapter.value}',
@@ -294,11 +290,7 @@ class ReaderProgress extends ConsumerWidget {
   final int seriesId;
   final int? chapterId;
 
-  const ReaderProgress({
-    super.key,
-    required this.seriesId,
-    this.chapterId,
-  });
+  const ReaderProgress({super.key, required this.seriesId, this.chapterId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -310,9 +302,7 @@ class ReaderProgress extends ConsumerWidget {
         ? navState.value!.currentPage / (navState.value!.totalPages - 1)
         : null;
 
-    return LinearProgressIndicator(
-      value: progress,
-    );
+    return LinearProgressIndicator(value: progress);
   }
 }
 
@@ -342,23 +332,14 @@ class SubpageProgress extends ConsumerWidget {
 
     final screenWidth = MediaQuery.sizeOf(context).width;
     final stepWidth =
-        reader.whenOrNull(
-          data: (data) => screenWidth / data.totalPages,
-        ) ??
-        0.0;
-    final offset = reader.whenOrNull(
-      data: (data) => stepWidth * data.page,
-    );
+        reader.whenOrNull(data: (data) => screenWidth / data.totalPages) ?? 0.0;
+    final offset = reader.whenOrNull(data: (data) => stepWidth * data.page);
 
     return SizedBox(
       height: 4.0,
       child: Stack(
         children: [
-          Positioned.fill(
-            child: LinearProgressIndicator(
-              value: progress,
-            ),
-          ),
+          Positioned.fill(child: LinearProgressIndicator(value: progress)),
           Positioned(
             left: offset,
             child: SizedBox(
@@ -398,18 +379,13 @@ class ChapterSnackbar extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             spacing: LayoutConstants.smallPadding,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  overflow: .ellipsis,
-                ),
-              ),
+              Expanded(child: Text(title, overflow: .ellipsis)),
               if (onDismiss != null)
-                TextButton(onPressed: onDismiss, child: Text(context.l10n.dismiss)),
-              FilledButton(
-                onPressed: onNavigate,
-                child: Text(context.l10n.go),
-              ),
+                TextButton(
+                  onPressed: onDismiss,
+                  child: Text(context.l10n.dismiss),
+                ),
+              FilledButton(onPressed: onNavigate, child: Text(context.l10n.go)),
             ],
           ),
         ),

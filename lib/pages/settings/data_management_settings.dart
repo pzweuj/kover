@@ -112,9 +112,8 @@ class DataManagementSettings extends ConsumerWidget {
                                   ),
                                   actions: [
                                     TextButton(
-                                      onPressed: () => Navigator.of(
-                                        context,
-                                      ).pop(false),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
                                       child: Text(context.l10n.cancel),
                                     ),
                                     FilledButton(
@@ -124,12 +123,9 @@ class DataManagementSettings extends ConsumerWidget {
                                         foregroundColor:
                                             theme.colorScheme.onError,
                                       ),
-                                      onPressed: () => Navigator.of(
-                                        context,
-                                      ).pop(true),
-                                      child: Text(
-                                        context.l10n.clearDatabase,
-                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(context.l10n.clearDatabase),
                                     ),
                                   ],
                                 );
@@ -151,9 +147,7 @@ class DataManagementSettings extends ConsumerWidget {
               if (!SafePlatform.isWeb)
                 const Row(
                   mainAxisAlignment: .start,
-                  children: [
-                    DatabaseSize(),
-                  ],
+                  children: [DatabaseSize()],
                 ),
             ],
           ),
@@ -227,9 +221,7 @@ class DatabaseClearOperationButton extends ConsumerWidget {
 }
 
 class DatabaseSize extends ConsumerWidget {
-  const DatabaseSize({
-    super.key,
-  });
+  const DatabaseSize({super.key});
 
   String _formatSize(int sizeInBytes) {
     if (sizeInBytes > 1024 * 1024 * 1024) {
@@ -253,7 +245,10 @@ class DatabaseSize extends ConsumerWidget {
       mainAxisSize: .min,
       mainAxisAlignment: .start,
       children: [
-        Text(context.l10n.databaseSize, style: Theme.of(context).textTheme.labelMedium),
+        Text(
+          context.l10n.databaseSize,
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
         Async(
           asyncValue: ref.watch(databaseSizeProvider),
           data: (size) {

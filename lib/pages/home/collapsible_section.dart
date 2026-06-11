@@ -35,15 +35,16 @@ class CollapsibleSection extends HookConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
+                Text(title, style: Theme.of(context).textTheme.headlineMedium),
                 TextButton(
                   onPressed: () {
                     showAll.value = !showAll.value;
                   },
-                  child: Text(showAll.value ? context.l10n.showLess : context.l10n.showAll),
+                  child: Text(
+                    showAll.value
+                        ? context.l10n.showLess
+                        : context.l10n.showAll,
+                  ),
                 ),
               ],
             ),

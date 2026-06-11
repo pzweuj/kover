@@ -58,7 +58,8 @@ class OnDeck extends ConsumerWidget {
 
     return AsyncSliver(
       asyncValue: onDeck,
-      data: (data) => CollapsibleSection(title: context.l10n.onDeck, series: data),
+      data: (data) =>
+          CollapsibleSection(title: context.l10n.onDeck, series: data),
     );
   }
 }
@@ -87,7 +88,8 @@ class RecentlyAdded extends ConsumerWidget {
 
     return AsyncSliver(
       asyncValue: series,
-      data: (data) => CollapsibleSection(title: context.l10n.recentlyAdded, series: data),
+      data: (data) =>
+          CollapsibleSection(title: context.l10n.recentlyAdded, series: data),
     );
   }
 }

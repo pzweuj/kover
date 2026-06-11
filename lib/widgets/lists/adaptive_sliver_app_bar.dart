@@ -39,7 +39,10 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
       final bottomHeight = bottom?.preferredSize.height ?? 0.0;
       final measuredHeight = infoHeight.value + bottomHeight;
       final minExpandedHeight = minFlexibleHeight + 220.0;
-      final maxExpandedHeight = math.max(minExpandedHeight, screenHeight * 0.72);
+      final maxExpandedHeight = math.max(
+        minExpandedHeight,
+        screenHeight * 0.72,
+      );
 
       return measuredHeight
           .clamp(minExpandedHeight, maxExpandedHeight)
@@ -58,10 +61,9 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
       actions: actions,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          final flexibleRange = (expandedHeight - minFlexibleHeight).clamp(
-            1.0,
-            double.infinity,
-          ).toDouble();
+          final flexibleRange = (expandedHeight - minFlexibleHeight)
+              .clamp(1.0, double.infinity)
+              .toDouble();
           final value =
               (constraints.maxHeight - minFlexibleHeight) / flexibleRange;
 

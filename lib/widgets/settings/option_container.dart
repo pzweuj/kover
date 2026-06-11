@@ -34,7 +34,9 @@ class OptionContainer extends StatelessWidget {
             Row(
               spacing: LayoutConstants.smallPadding,
               children: [
-                Expanded(child: _OptionTitle(icon: icon, title: title)),
+                Expanded(
+                  child: _OptionTitle(icon: icon, title: title),
+                ),
                 if (description != null)
                   Tooltip(
                     message: description!,
@@ -58,8 +60,7 @@ class OptionContainer extends StatelessWidget {
                   ),
               ],
             ),
-            if (!useSameRow)
-              SizedBox(width: double.infinity, child: child),
+            if (!useSameRow) SizedBox(width: double.infinity, child: child),
           ],
         );
       },
@@ -71,10 +72,7 @@ class _OptionTitle extends StatelessWidget {
   final IconData? icon;
   final String title;
 
-  const _OptionTitle({
-    required this.icon,
-    required this.title,
-  });
+  const _OptionTitle({required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +81,7 @@ class _OptionTitle extends StatelessWidget {
       children: [
         if (icon != null) Icon(icon),
         Flexible(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
+          child: Text(title, style: Theme.of(context).textTheme.titleSmall),
         ),
       ],
     );
