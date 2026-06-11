@@ -77,14 +77,7 @@ jobs:
 
       - name: Codegen
         run: |
-          flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Verify codegen
-        run: |
-          echo "Checking for generated files..."
-          ls -la lib/riverpod/providers/network_switch.g.dart 2>/dev/null || echo "network_switch.g.dart NOT FOUND"
-          ls -la lib/riverpod/providers/client.g.dart 2>/dev/null || echo "client.g.dart NOT FOUND"
-          cat lib/riverpod/providers/network_switch.g.dart 2>/dev/null || echo "Cannot read network_switch.g.dart"
+          dart run build_runner build --delete-conflicting-outputs
 
       - name: Build
         run: |

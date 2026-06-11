@@ -1,8 +1,8 @@
 import 'package:chopper/chopper.dart';
 import 'package:http/http.dart' as http;
 import 'package:kover/api/openapi.swagger.dart';
-import 'package:kover/riverpod/providers/network_switch.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
+import 'package:kover/widgets/util/network_switch_listener.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'client.g.dart';
@@ -172,7 +172,7 @@ ChopperClient authenticatedClient(Ref ref) {
     key!,
     fallbackUri: fallbackUri,
     onFallback: (from, to) {
-      ref.read(networkSwitchNotifierProvider.notifier).notify(from, to);
+      NetworkSwitchNotifier.instance.notify(from, to);
     },
   );
 
