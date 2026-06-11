@@ -9,10 +9,8 @@ import 'package:kover/pages/reading_lists_page/reading_lists_page.dart';
 import 'package:kover/pages/series_page/series_page.dart';
 import 'package:kover/pages/reader/reader_page.dart';
 import 'package:kover/pages/series_detail_page/chapter_detail_page/chapter_detail_page.dart';
-import 'package:kover/pages/series_detail_page/chapters_page/chapters_page.dart';
 import 'package:kover/pages/series_detail_page/series_detail_page.dart';
 import 'package:kover/pages/series_detail_page/volume_detail_page/volume_detail_page.dart';
-import 'package:kover/pages/series_detail_page/volumes_page/volumes_page.dart';
 import 'package:kover/pages/settings/settings_page.dart';
 import 'package:kover/pages/want_to_read_page/want_to_read_page.dart';
 import 'package:kover/widgets/util/navigator_container.dart';
@@ -43,25 +41,12 @@ GoRouter router(Ref ref) {
             TypedGoRoute<SeriesDetailRoute>(
               path: 'series/:seriesId',
               routes: [
-                TypedGoRoute<VolumesRoute>(
-                  path: 'volumes',
-                  routes: [
-                    TypedGoRoute<VolumeDetailRoute>(
-                      path: ':volumeId',
-                      routes: [
-                        TypedGoRoute<VolumeChaptersRoute>(path: 'chapters'),
-                      ],
-                    ),
-                  ],
+                TypedGoRoute<VolumeDetailRoute>(
+                  path: 'volume/:volumeId',
                 ),
-                TypedGoRoute<ChaptersRoute>(
-                  path: 'chapters',
-                  routes: [
-                    TypedGoRoute<ChapterDetailRoute>(path: ':chapterId'),
-                  ],
+                TypedGoRoute<ChapterDetailRoute>(
+                  path: 'chapter/:chapterId',
                 ),
-                TypedGoRoute<StorylineRoute>(path: 'storyline'),
-                TypedGoRoute<SpecialsRoute>(path: 'specials'),
               ],
             ),
           ],
@@ -224,52 +209,6 @@ class SeriesDetailRoute extends GoRouteData with $SeriesDetailRoute {
       SeriesDetailPage(seriesId: seriesId);
 }
 
-class VolumesRoute extends GoRouteData with $VolumesRoute {
-  const VolumesRoute({required this.seriesId});
-
-  final int seriesId;
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return VolumesPage(
-      seriesId: seriesId,
-    );
-  }
-}
-
-class ChaptersRoute extends GoRouteData with $ChaptersRoute {
-  const ChaptersRoute({required this.seriesId});
-
-  final int seriesId;
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ChaptersPage(seriesId: seriesId);
-  }
-}
-
-class SpecialsRoute extends GoRouteData with $SpecialsRoute {
-  const SpecialsRoute({required this.seriesId});
-
-  final int seriesId;
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return SpecialsPage(seriesId: seriesId);
-  }
-}
-
-class StorylineRoute extends GoRouteData with $StorylineRoute {
-  const StorylineRoute({required this.seriesId});
-
-  final int seriesId;
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return StorylinePage(seriesId: seriesId);
-  }
-}
-
 class VolumeDetailRoute extends GoRouteData with $VolumeDetailRoute {
   VolumeDetailRoute({required this.seriesId, required this.volumeId});
 
@@ -291,21 +230,6 @@ class ChapterDetailRoute extends GoRouteData with $ChapterDetailRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return ChapterDetailPage(chapterId: chapterId);
-  }
-}
-
-class VolumeChaptersRoute extends GoRouteData with $VolumeChaptersRoute {
-  const VolumeChaptersRoute({required this.seriesId, required this.volumeId});
-
-  final int seriesId;
-  final int volumeId;
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ChaptersPage(
-      seriesId: seriesId,
-      volumeId: volumeId,
-    );
   }
 }
 
