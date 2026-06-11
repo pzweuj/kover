@@ -18,98 +18,101 @@ class CredentialsSettings extends HookConsumerWidget {
     final loginStatus = ref.watch(loginStatusProvider);
 
     final obscureKey = useState(true);
+    final urlController = useTextEditingController();
+    final fallbackUrlController = useTextEditingController();
+    final apiKeyController = useTextEditingController();
+
+    // Initialize controllers from settings when data loads
+    useEffect(() {
+      final data = settings.value;
+      if (data != null) {
+        urlController.text = data.url ?? '';
+        fallbackUrlController.text = data.fallbackUrl ?? '';
+        apiKeyController.text = data.apiKey ?? '';
+      }
+      return null;
+    }, [settings.value]);
 
     return Card(
       margin: LayoutConstants.mediumEdgeInsets,
       child: Padding(
         padding: LayoutConstants.mediumEdgeInsets,
-        child: Async(
-          asyncValue: settings,
-          data: (data) {
-            final urlController = TextEditingController(text: data.url);
-            final fallbackUrlController = TextEditingController(
-              text: data.fallbackUrl,
-            );
-            final apiKeyController = TextEditingController(text: data.apiKey);
-
-            return Column(
-              mainAxisSize: .min,
-              crossAxisAlignment: .start,
-              spacing: LayoutConstants.mediumPadding,
-              children: [
-                Text(
-                  context.l10n.credentials,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                TextField(
-                  enabled: loginStatus != .loading,
-                  controller: urlController,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.primaryBaseUrl,
+        child: Column(
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
+          spacing: LayoutConstants.mediumPadding,
+          children: [
+            Text(
+              context.l10n.credentials,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            TextField(
+              enabled: loginStatus != .loading,
+              controller: urlController,
+              decoration: InputDecoration(
+                labelText: context.l10n.primaryBaseUrl,
+              ),
+            ),
+            TextField(
+              enabled: loginStatus != .loading,
+              controller: fallbackUrlController,
+              decoration: InputDecoration(
+                labelText: context.l10n.fallbackBaseUrl,
+                helperText: context.l10n.fallbackBaseUrlDescription,
+              ),
+            ),
+            TextField(
+              obscureText: obscureKey.value,
+              enabled: loginStatus != .loading,
+              controller: apiKeyController,
+              decoration: InputDecoration(
+                labelText: context.l10n.apiKey,
+                suffixIcon: Padding(
+                  padding: const EdgeInsetsGeometry.symmetric(
+                    horizontal: LayoutConstants.smallPadding,
                   ),
-                ),
-                TextField(
-                  enabled: loginStatus != .loading,
-                  controller: fallbackUrlController,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.fallbackBaseUrl,
-                    helperText: context.l10n.fallbackBaseUrlDescription,
-                  ),
-                ),
-                TextField(
-                  obscureText: obscureKey.value,
-                  enabled: loginStatus != .loading,
-                  controller: apiKeyController,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.apiKey,
-                    suffixIcon: Padding(
-                      padding: const EdgeInsetsGeometry.symmetric(
-                        horizontal: LayoutConstants.smallPadding,
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          obscureKey.value = !obscureKey.value;
-                        },
-                        icon: Icon(
-                          obscureKey.value
-                              ? LucideIcons.eye
-                              : LucideIcons.eyeOff,
-                        ),
-                      ),
+                  child: IconButton(
+                    onPressed: () {
+                      obscureKey.value = !obscureKey.value;
+                    },
+                    icon: Icon(
+                      obscureKey.value
+                          ? LucideIcons.eye
+                          : LucideIcons.eyeOff,
                     ),
                   ),
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    const _User(),
-                    FilledButton.icon(
-                      onPressed: () {
-                        ref
-                            .read(credentialsProvider.notifier)
-                            .updateCredentials(
-                              CredentialsState(
-                                url: urlController.text.trim(),
-                                fallbackUrl: fallbackUrlController.text.trim(),
-                                apiKey: apiKeyController.text.trim(),
-                              ),
-                            );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.l10n.savedSuccessfully),
-                            duration: const Duration(seconds: 1),
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                const _User(),
+                FilledButton.icon(
+                  onPressed: () {
+                    ref
+                        .read(credentialsProvider.notifier)
+                        .updateCredentials(
+                          CredentialsState(
+                            url: urlController.text.trim(),
+                            fallbackUrl: fallbackUrlController.text.trim(),
+                            apiKey: apiKeyController.text.trim(),
                           ),
                         );
-                      },
-                      label: Text(context.l10n.save),
-                      icon: const Icon(LucideIcons.save),
-                    ),
-                  ],
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.savedSuccessfully),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  label: Text(context.l10n.save),
+                  icon: const Icon(LucideIcons.save),
                 ),
               ],
-            );
-          },
+            ),
+          ],
         ),
       ),
     );

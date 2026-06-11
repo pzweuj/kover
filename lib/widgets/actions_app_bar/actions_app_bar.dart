@@ -6,8 +6,13 @@ import 'package:kover/widgets/actions_app_bar/sync_button.dart';
 
 class ActionsAppBar extends StatelessWidget {
   final String? title;
+  final List<Widget> leadingActions;
 
-  const ActionsAppBar({super.key, this.title});
+  const ActionsAppBar({
+    super.key,
+    this.title,
+    this.leadingActions = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +25,22 @@ class ActionsAppBar extends StatelessWidget {
       scrolledUnderElevation: 0,
       actionsPadding: LayoutConstants.smallEdgeInsets,
       title: title != null
-          ? Text(title!, style: Theme.of(context).textTheme.headlineMedium)
+          ? Text(
+              title!,
+              style: Theme.of(context).textTheme.headlineMedium,
+            )
           : null,
-      actions: const [_ActionsBar()],
+      actions: [
+        _ActionsBar(leadingActions: leadingActions),
+      ],
     );
   }
 }
 
 class _ActionsBar extends ConsumerWidget {
-  const _ActionsBar();
+  final List<Widget> leadingActions;
+
+  const _ActionsBar({required this.leadingActions});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,15 +54,25 @@ class _ActionsBar extends ConsumerWidget {
           Radius.circular(LayoutConstants.mediumBorderRadius),
         ),
       ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
           vertical: LayoutConstants.smallerPadding,
           horizontal: LayoutConstants.smallPadding,
         ),
         child: Row(
           spacing: LayoutConstants.smallPadding,
           mainAxisSize: MainAxisSize.min,
-          children: [SearchButton(), SyncButton()],
+          children: [
+            ...leadingActions,
+            if (leadingActions.isNotEmpty)
+              Container(
+                width: 1,
+                height: LayoutConstants.mediumIcon,
+                color: theme.colorScheme.outlineVariant,
+              ),
+            const SearchButton(),
+            const SyncButton(),
+          ],
         ),
       ),
     );
