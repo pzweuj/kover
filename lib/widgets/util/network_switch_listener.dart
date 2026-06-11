@@ -11,7 +11,7 @@ class NetworkSwitchListener extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(networkSwitchNotifierProvider, (previous, next) {
-      if (next != null) {
+      if (next.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${context.l10n.networkSwitched} ($next)'),

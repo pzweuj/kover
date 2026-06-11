@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/providers/chapter.dart';
 import 'package:kover/riverpod/providers/download.dart';
+import 'package:kover/riverpod/providers/reader.dart';
 import 'package:kover/riverpod/providers/router.dart';
 import 'package:kover/widgets/cards/cover_card.dart';
 import 'package:kover/widgets/cards/cover_image.dart';

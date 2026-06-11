@@ -146,12 +146,12 @@ class FallbackHttpClient extends http.BaseClient {
 @Riverpod(keepAlive: true)
 class NetworkSwitchNotifier extends _$NetworkSwitchNotifier {
   @override
-  String? build() => null;
+  String build() => '';
 
   void notify(String from, String to) {
     state = '$from → $to';
     Timer(const Duration(seconds: 1), () {
-      if (state != null) state = null;
+      state = '';
     });
   }
 }

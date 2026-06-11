@@ -25,16 +25,14 @@ class NavigatorContainer extends HookConsumerWidget {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         oneOffs.whenData((oneOffs) async {
-          if (!oneOffs.monitoringOptOutPopupShown && ref.mounted) {
+          if (!oneOffs.monitoringOptOutPopupShown) {
             await showDialog(
               context: context,
               builder: (context) => const MonitoringOptOutPopup(),
             );
-            if (ref.mounted) {
-              await ref
-                  .read(oneOffsProvider.notifier)
-                  .setMonitoringOptOutPopupShown();
-            }
+            await ref
+                .read(oneOffsProvider.notifier)
+                .setMonitoringOptOutPopupShown();
           }
         });
       });

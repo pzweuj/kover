@@ -72,8 +72,8 @@ final _inputDecorationTheme = const InputDecorationTheme(
 final _pageTransitionsTheme = const PageTransitionsTheme(
   builders: {
     TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
+    TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
   },
 );
 

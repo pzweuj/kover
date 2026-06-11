@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/providers/download.dart';
+import 'package:kover/riverpod/providers/reader.dart';
 import 'package:kover/riverpod/providers/router.dart';
 import 'package:kover/riverpod/providers/series.dart';
 import 'package:kover/riverpod/providers/want_to_read.dart';
