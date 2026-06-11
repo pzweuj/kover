@@ -16,13 +16,8 @@ Future<void> main() async {
   SentryWidgetsFlutterBinding.ensureInitialized();
   await initializeBackgroundTask();
   await initializeSentry(
-    appRunner: () => runApp(
-      ProviderScope(
-        child: SentryWidget(
-          child: const App(),
-        ),
-      ),
-    ),
+    appRunner: () =>
+        runApp(ProviderScope(child: SentryWidget(child: const App()))),
   );
 }
 
@@ -39,27 +34,35 @@ class App extends ConsumerWidget {
           asyncValue: theme,
           data: (theme) => Async(
             asyncValue: generalSettings,
-            data: (generalSettings) => MaterialApp.router(
-              title: 'Kover',
-              debugShowCheckedModeBanner: false,
-              locale: AppLocalizations.localeFromCode(
-                generalSettings.localeCode,
+            data: (generalSettings) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(generalSettings.textScaleFactor),
               ),
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-              ],
-              theme: theme.lightTheme,
-              darkTheme: theme.darkTheme,
-              themeMode: theme.mode,
-              routerConfig: ref.watch(routerProvider),
+              child: MaterialApp.router(
+                title: 'Kover',
+                debugShowCheckedModeBanner: false,
+                locale: AppLocalizations.localeFromCode(
+                  generalSettings.localeCode,
+                ),
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                theme: theme.lightTheme,
+                darkTheme: theme.darkTheme,
+                themeMode: theme.mode,
+                routerConfig: ref.watch(routerProvider),
+              ),
             ),
             loading: () => const SizedBox.shrink(),
           ),
-          loading: () => const SizedBox.shrink(),
+          loading: () => const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          ),
         ),
       ),
     );

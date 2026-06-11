@@ -11,16 +11,13 @@ import 'package:kover/utils/layout_constants.dart';
 class Summary extends HookConsumerWidget {
   final String? summary;
 
-  const Summary({
-    super.key,
-    required this.summary,
-  });
+  const Summary({super.key, required this.summary});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collapsed = useState(true);
 
-    if (summary == null || summary!.isEmpty) return const SizedBox.shrink();
+    if (summary?.isEmpty ?? true) return const SizedBox.shrink();
 
     return Column(
       mainAxisSize: .min,
@@ -52,10 +49,7 @@ class _SummaryContent extends HookWidget {
   final String summary;
   final bool collapsed;
 
-  const _SummaryContent({
-    required this.summary,
-    required this.collapsed,
-  });
+  const _SummaryContent({required this.summary, required this.collapsed});
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +66,7 @@ class _SummaryContent extends HookWidget {
             // show past the overflow
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
-              child: HtmlWidget(
-                summary,
-                renderMode: .column,
-              ),
+              child: HtmlWidget(summary, renderMode: .column),
             ),
           )
         : Markdown(
@@ -98,10 +89,7 @@ class _SummaryContent extends HookWidget {
                   return const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white,
-                      Colors.transparent,
-                    ],
+                    colors: [Colors.white, Colors.transparent],
                     stops: [0.7, 0.95],
                   ).createShader(bounds);
                 },

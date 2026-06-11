@@ -16,6 +16,7 @@ class SeriesCoverImage extends ConsumerWidget {
   final BoxFit fit;
   final BorderRadius? borderRadius;
   final bool usePlaceholder;
+  final String? heroTag;
 
   const SeriesCoverImage({
     super.key,
@@ -25,19 +26,26 @@ class SeriesCoverImage extends ConsumerWidget {
     this.usePlaceholder = true,
     this.fit = BoxFit.cover,
     this.borderRadius,
+    this.heroTag,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Async(
       asyncValue: ref.watch(seriesCoverProvider(seriesId: seriesId)),
-      data: (imageData) => PlaceholderCoverImage(
-        image: imageData,
-        fit: fit,
-        height: height,
-        width: width,
-        usePlaceholder: usePlaceholder,
-      ),
+      data: (imageData) {
+        final image = PlaceholderCoverImage(
+          image: imageData,
+          fit: fit,
+          height: height,
+          width: width,
+          usePlaceholder: usePlaceholder,
+        );
+        if (heroTag != null) {
+          return Hero(tag: heroTag!, child: image);
+        }
+        return image;
+      },
     );
   }
 }
@@ -208,18 +216,11 @@ class PlaceholderCoverImage extends StatelessWidget {
           ? SizedBox(
               width: width,
               height: height,
-              child: const Center(
-                child: Icon(LucideIcons.image),
-              ),
+              child: const Center(child: Icon(LucideIcons.image)),
             )
           : const SizedBox.shrink();
     }
 
-    return Image.memory(
-      image!.data,
-      fit: fit,
-      height: height,
-      width: width,
-    );
+    return Image.memory(image!.data, fit: fit, height: height, width: width);
   }
 }

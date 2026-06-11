@@ -95,6 +95,12 @@ class CredentialsSettings extends HookConsumerWidget {
                                 apiKey: apiKeyController.text.trim(),
                               ),
                             );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(context.l10n.savedSuccessfully),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
                       },
                       label: Text(context.l10n.save),
                       icon: const Icon(LucideIcons.save),
@@ -130,12 +136,7 @@ class _User extends ConsumerWidget {
           spacing: LayoutConstants.smallPadding,
           children: [
             CircleAvatar(child: Text(initials)),
-            Text(
-              name,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium,
-            ),
+            Text(name, style: Theme.of(context).textTheme.titleMedium),
             if (version != null)
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -162,10 +163,8 @@ class _User extends ConsumerWidget {
         dimension: LayoutConstants.mediumIcon,
         child: CircularProgressIndicator(),
       ),
-      error: (_, _) => Icon(
-        LucideIcons.circleX,
-        color: Theme.of(context).colorScheme.error,
-      ),
+      error: (_, _) =>
+          Icon(LucideIcons.circleX, color: Theme.of(context).colorScheme.error),
     );
   }
 }

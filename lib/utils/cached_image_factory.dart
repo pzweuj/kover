@@ -7,34 +7,29 @@ class CachedImageFactory extends WidgetFactory {
   final Map<int, MemoryImage> _cache = {};
   final EpubImageFit imageFit;
 
-  CachedImageFactory({
-    this.imageFit = EpubImageFit.fitWidth,
-  });
+  CachedImageFactory({this.imageFit = EpubImageFit.fitWidth});
 
   @override
-  Widget? buildImageWidget(
-    BuildTree meta,
-    ImageSource src,
-  ) {
+  Widget? buildImageWidget(BuildTree meta, ImageSource src) {
     final bytes = bytesFromDataUri(src.url);
 
     if (bytes == null) {
       return super.buildImageWidget(meta, src);
     }
 
-    final hash = Object.hash(src.url, src.url.length);
+    final hash = src.url.hashCode;
 
     final provider = _cache[hash] ??= MemoryImage(bytes);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final mediaQuery = MediaQuery.of(context);
+        final size = MediaQuery.sizeOf(context);
         final availableWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
-            : mediaQuery.size.width;
+            : size.width;
         final availableHeight = constraints.maxHeight.isFinite
             ? constraints.maxHeight
-            : mediaQuery.size.height - mediaQuery.padding.vertical;
+            : size.height - MediaQuery.paddingOf(context).vertical;
 
         return switch (imageFit) {
           EpubImageFit.original => Center(

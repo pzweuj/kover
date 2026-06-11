@@ -161,30 +161,38 @@ class ReaderOverlay extends HookConsumerWidget {
                     ),
                   ),
                   Positioned.fill(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: GestureDetector(
-                            behavior: .translucent,
-                            onTap: onPreviousPage,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: GestureDetector(
-                            behavior: .translucent,
-                            onTap: () => uiVisible.value = !uiVisible.value,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: GestureDetector(
-                            behavior: .translucent,
-                            onTap: onNextPage,
-                          ),
-                        ),
-                      ],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final wide =
+                            constraints.maxWidth > LayoutBreakpoints.compact;
+                        final sideFlex = wide ? 1 : 1;
+                        final centerFlex = wide ? 4 : 2;
+                        return Row(
+                          children: [
+                            Flexible(
+                              flex: sideFlex,
+                              child: GestureDetector(
+                                behavior: .translucent,
+                                onTap: onPreviousPage,
+                              ),
+                            ),
+                            Flexible(
+                              flex: centerFlex,
+                              child: GestureDetector(
+                                behavior: .translucent,
+                                onTap: () => uiVisible.value = !uiVisible.value,
+                              ),
+                            ),
+                            Flexible(
+                              flex: sideFlex,
+                              child: GestureDetector(
+                                behavior: .translucent,
+                                onTap: onNextPage,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   Align(

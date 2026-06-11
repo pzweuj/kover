@@ -12,12 +12,14 @@ ChopperClient getChopperClient(
   Uri uri,
   String apiKey, {
   Uri? fallbackUri,
+  void Function(String from, String to)? onFallback,
 }) {
   return ChopperClient(
     baseUrl: uri,
     client: FallbackHttpClient(
       primaryBaseUrl: uri,
       fallbackBaseUrl: fallbackUri,
+      onFallback: onFallback,
     ),
     interceptors: [
       HeadersInterceptor({
@@ -34,11 +36,13 @@ class FallbackHttpClient extends http.BaseClient {
   final Uri? fallbackBaseUrl;
   final Duration primaryTimeout;
   final http.Client _inner;
+  final void Function(String from, String to)? onFallback;
 
   FallbackHttpClient({
     required this.primaryBaseUrl,
     this.fallbackBaseUrl,
     this.primaryTimeout = const Duration(seconds: 8),
+    this.onFallback,
     http.Client? inner,
   }) : _inner = inner ?? http.Client();
 
@@ -52,12 +56,14 @@ class FallbackHttpClient extends http.BaseClient {
           : await _inner.send(request).timeout(primaryTimeout);
       if (fallbackRequest != null && _shouldRetryStatus(response.statusCode)) {
         await response.stream.drain<void>();
+        onFallback?.call(primaryBaseUrl.host, fallbackBaseUrl!.host);
         return _inner.send(fallbackRequest);
       }
 
       return response;
     } catch (_) {
       if (fallbackRequest == null) rethrow;
+      onFallback?.call(primaryBaseUrl.host, fallbackBaseUrl!.host);
       return _inner.send(fallbackRequest);
     }
   }
@@ -76,11 +82,7 @@ class FallbackHttpClient extends http.BaseClient {
 
     return _copyRequest(
       request,
-      _replaceBaseUrl(
-        request.url,
-        from: primaryBaseUrl,
-        to: fallbackBaseUrl,
-      ),
+      _replaceBaseUrl(request.url, from: primaryBaseUrl, to: fallbackBaseUrl),
     );
   }
 
@@ -142,6 +144,19 @@ class FallbackHttpClient extends http.BaseClient {
 }
 
 @Riverpod(keepAlive: true)
+class NetworkSwitchNotifier extends _$NetworkSwitchNotifier {
+  @override
+  String? build() => null;
+
+  void notify(String from, String to) {
+    state = '$from → $to';
+    Timer(const Duration(seconds: 1), () {
+      if (state != null) state = null;
+    });
+  }
+}
+
+@Riverpod(keepAlive: true)
 ChopperClient authenticatedClient(Ref ref) {
   final settings = ref.watch(credentialsProvider).value;
   final key = ref.watch(apiKeyProvider);
@@ -170,6 +185,9 @@ ChopperClient authenticatedClient(Ref ref) {
     uri,
     key!,
     fallbackUri: fallbackUri,
+    onFallback: (from, to) {
+      ref.read(networkSwitchNotifierProvider.notifier).notify(from, to);
+    },
   );
 
   return client;

@@ -29,9 +29,7 @@ class DownloadQueuePage extends ConsumerWidget {
         slivers: [
           SliverAppBar.large(
             title: Text(context.l10n.downloadQueue),
-            actions: [
-              if (hasDls) const CancellAllAction(),
-            ],
+            actions: [if (hasDls) const CancelAllAction()],
           ),
           const SliverPadding(
             padding: EdgeInsets.symmetric(
@@ -46,10 +44,8 @@ class DownloadQueuePage extends ConsumerWidget {
   }
 }
 
-class CancellAllAction extends ConsumerWidget {
-  const CancellAllAction({
-    super.key,
-  });
+class CancelAllAction extends ConsumerWidget {
+  const CancelAllAction({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,10 +87,7 @@ class DownloadQueueList extends ConsumerWidget {
 class DownloadQueueItem extends ConsumerWidget {
   final int chapterId;
 
-  const DownloadQueueItem({
-    super.key,
-    required this.chapterId,
-  });
+  const DownloadQueueItem({super.key, required this.chapterId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -20,11 +20,7 @@ class SeriesAppBar extends HookConsumerWidget {
   final int seriesId;
   final PreferredSizeWidget? bottom;
 
-  const SeriesAppBar({
-    super.key,
-    required this.seriesId,
-    this.bottom,
-  });
+  const SeriesAppBar({super.key, required this.seriesId, this.bottom});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,20 +41,12 @@ class SeriesAppBar extends HookConsumerWidget {
             ActionsMenuButton(
               onMarkRead: () async {
                 await ref
-                    .read(
-                      markSeriesReadProvider(
-                        seriesId: seriesId,
-                      ).notifier,
-                    )
+                    .read(markSeriesReadProvider(seriesId: seriesId).notifier)
                     .markRead();
               },
               onMarkUnread: () async {
                 await ref
-                    .read(
-                      markSeriesReadProvider(
-                        seriesId: seriesId,
-                      ).notifier,
-                    )
+                    .read(markSeriesReadProvider(seriesId: seriesId).notifier)
                     .markUnread();
               },
               onDownload: downloadProgress < 1.0
@@ -93,6 +81,7 @@ class SeriesAppBar extends HookConsumerWidget {
           cover: SeriesCoverImage(
             seriesId: seriesId,
             usePlaceholder: false,
+            heroTag: 'series-cover-$seriesId',
           ),
           info: _Metadata(series: data),
           collapsedContinueButton: _SeriesTitleContinueButton(
@@ -118,10 +107,7 @@ class _SeriesContinueButtonImage extends ConsumerWidget {
     return Async(
       asyncValue: continuePoint,
       data: (data) => ContinueButtonImage(
-        image: ChapterCoverImage(
-          chapterId: data.id,
-          usePlaceholder: false,
-        ),
+        image: ChapterCoverImage(chapterId: data.id, usePlaceholder: false),
       ),
     );
   }
@@ -130,9 +116,7 @@ class _SeriesContinueButtonImage extends ConsumerWidget {
 class _SeriesTitleContinueButton extends ConsumerWidget {
   final int seriesId;
 
-  const _SeriesTitleContinueButton({
-    required this.seriesId,
-  });
+  const _SeriesTitleContinueButton({required this.seriesId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -169,9 +153,7 @@ class _SeriesContinuePointButton extends ConsumerWidget {
 
 class _Metadata extends ConsumerWidget {
   final SeriesModel series;
-  const _Metadata({
-    required this.series,
-  });
+  const _Metadata({required this.series});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -190,13 +172,9 @@ class _Metadata extends ConsumerWidget {
               if ((series.wordCount ?? 0) > 0)
                 WordCount(wordCount: series.wordCount!),
               Pages(pages: series.pages),
-              RemainingHours(
-                hours: series.avgHoursToRead,
-              ),
+              RemainingHours(hours: series.avgHoursToRead),
               if (metadata.releaseYear != null)
-                ReleaseYear(
-                  releaseYear: metadata.releaseYear!,
-                ),
+                ReleaseYear(releaseYear: metadata.releaseYear!),
             ],
           ),
           Wrap(

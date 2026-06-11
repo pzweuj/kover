@@ -34,13 +34,13 @@ class HomePageContent extends ConsumerWidget {
           onRefresh: () async {
             await ref.read(syncManagerProvider.notifier).fullSync();
           },
-          child: const CustomScrollView(
+          child: CustomScrollView(
             slivers: [
-              ActionsAppBar(),
-              OnDeck(),
-              RecentlyUpdated(),
-              RecentlyAdded(),
-              SliverBottomPadding(),
+              ActionsAppBar(title: context.l10n.onDeck),
+              const OnDeck(),
+              const RecentlyUpdated(),
+              const RecentlyAdded(),
+              const SliverBottomPadding(),
             ],
           ),
         ),
@@ -58,8 +58,11 @@ class OnDeck extends ConsumerWidget {
 
     return AsyncSliver(
       asyncValue: onDeck,
-      data: (data) =>
-          CollapsibleSection(title: context.l10n.onDeck, series: data),
+      data: (data) => CollapsibleSection(
+        title: context.l10n.onDeck,
+        series: data,
+        showTitle: false,
+      ),
     );
   }
 }

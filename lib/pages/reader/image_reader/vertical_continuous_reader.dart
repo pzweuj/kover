@@ -72,14 +72,12 @@ class VerticalContinuousReader extends HookConsumerWidget {
 
     final nav = ref.watch(navProvider);
 
-    final settings = ref.watch(
-      imageReaderSettingsProvider(seriesId: seriesId),
-    );
+    final settings = ref.watch(imageReaderSettingsProvider(seriesId: seriesId));
 
     ref.listen(
-      imageReaderSettingsProvider(seriesId: seriesId).select(
-        (settings) => settings.value?.verticalReaderPadding,
-      ),
+      imageReaderSettingsProvider(
+        seriesId: seriesId,
+      ).select((settings) => settings.value?.verticalReaderPadding),
       (previous, next) {
         if (previous != next) {
           ref
@@ -130,37 +128,33 @@ class VerticalContinuousReader extends HookConsumerWidget {
 
             scrollController.addListener(handleScrollEnd);
 
-            ref.listen(
-              navProvider,
-              (previous, next) {
-                next.whenData((next) async {
-                  if (!scrollController.hasClients ||
-                      previous?.value?.currentPage == next.currentPage) {
-                    return;
-                  }
+            ref.listen(navProvider, (previous, next) {
+              next.whenData((next) async {
+                if (!scrollController.hasClients ||
+                    previous?.value?.currentPage == next.currentPage) {
+                  return;
+                }
 
-                  if (next.fromObserver) {
-                    return;
-                  }
+                if (next.fromObserver) {
+                  return;
+                }
 
-                  final isSequential =
-                      previous != null &&
-                      previous.hasValue &&
-                      (next.currentPage - previous.value!.currentPage).abs() ==
-                          1;
+                final isSequential =
+                    previous != null &&
+                    previous.hasValue &&
+                    (next.currentPage - previous.value!.currentPage).abs() == 1;
 
-                  if (isSequential) {
-                    await observerController.animateTo(
-                      index: next.currentPage,
-                      duration: 200.ms,
-                      curve: Curves.easeInOut,
-                    );
-                  } else {
-                    await observerController.jumpTo(index: next.currentPage);
-                  }
-                });
-              },
-            );
+                if (isSequential) {
+                  await observerController.animateTo(
+                    index: next.currentPage,
+                    duration: 200.ms,
+                    curve: Curves.easeInOut,
+                  );
+                } else {
+                  await observerController.jumpTo(index: next.currentPage);
+                }
+              });
+            });
 
             final content = Stack(
               children: [
@@ -198,9 +192,9 @@ class VerticalContinuousReader extends HookConsumerWidget {
                     child: CustomScrollView(
                       controller: scrollController,
                       scrollCacheExtent: const ScrollCacheExtent.viewport(5),
-                      scrollBehavior: ScrollConfiguration.of(context).copyWith(
-                        scrollbars: false,
-                      ),
+                      scrollBehavior: ScrollConfiguration.of(
+                        context,
+                      ).copyWith(scrollbars: false),
                       slivers: [
                         AnimatedBuilder(
                           animation: gestureController,
@@ -315,10 +309,8 @@ class _RenderPreviousPages extends ConsumerWidget {
     return Async(
       asyncValue: cache,
       data: (cache) {
-        final pagesToRender = List.generate(
-          currentPage,
-          (index) => index,
-        )..removeWhere((index) => cache.cachedHeights.containsKey(index));
+        final pagesToRender = List.generate(currentPage, (index) => index)
+          ..removeWhere((index) => cache.cachedHeights.containsKey(index));
 
         return Stack(
           children: pagesToRender.map((page) {
@@ -358,9 +350,7 @@ class _RenderPreviousPages extends ConsumerWidget {
                           padding: EdgeInsets.symmetric(
                             horizontal: settings.verticalReaderPadding,
                           ),
-                          child: _RenderImage(
-                            image: image,
-                          ),
+                          child: _RenderImage(image: image),
                         ),
                       );
                     },
@@ -382,8 +372,8 @@ class _RenderImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cacheWidth =
-        (MediaQuery.of(context).size.width *
-                MediaQuery.of(context).devicePixelRatio)
+        (MediaQuery.sizeOf(context).width *
+                MediaQuery.devicePixelRatioOf(context))
             .ceil();
 
     return Image.memory(

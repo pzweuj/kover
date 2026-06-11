@@ -13,9 +13,7 @@ part 'theme.g.dart';
 
 final CardThemeData cardThemeData = const CardThemeData();
 
-final _theme = MaterialTheme(
-  Typography.material2021().black,
-);
+final _theme = MaterialTheme(Typography.material2021().black);
 
 final _lightBase = _theme.light();
 final _darkBase = _theme.dark();
@@ -57,9 +55,7 @@ final _navigationBarTheme = const NavigationBarThemeData(
 final _segmentedButtonTheme = SegmentedButtonThemeData(
   style: SegmentedButton.styleFrom(
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(
-        LayoutConstants.smallerBorderRadius,
-      ),
+      borderRadius: BorderRadius.circular(LayoutConstants.smallerBorderRadius),
     ),
   ),
 );
@@ -71,6 +67,14 @@ final _inputDecorationTheme = const InputDecorationTheme(
     ),
   ),
   isDense: true,
+);
+
+final _pageTransitionsTheme = const PageTransitionsTheme(
+  builders: {
+    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+  },
 );
 
 @freezed
@@ -112,11 +116,11 @@ sealed class ThemeModel with _$ThemeModel {
     navigationBarTheme: _navigationBarTheme,
     segmentedButtonTheme: _segmentedButtonTheme,
     inputDecorationTheme: _inputDecorationTheme,
+    pageTransitionsTheme: _pageTransitionsTheme,
   );
 
-  ThemeData get _outlinedLightTheme => _lightTheme.copyWith(
-    cardTheme: _outlinedLightCardTheme,
-  );
+  ThemeData get _outlinedLightTheme =>
+      _lightTheme.copyWith(cardTheme: _outlinedLightCardTheme);
 
   ThemeData get lightTheme => outlined ? _outlinedLightTheme : _lightTheme;
 
@@ -148,11 +152,11 @@ sealed class ThemeModel with _$ThemeModel {
     navigationBarTheme: _navigationBarTheme,
     segmentedButtonTheme: _segmentedButtonTheme,
     inputDecorationTheme: _inputDecorationTheme,
+    pageTransitionsTheme: _pageTransitionsTheme,
   );
 
-  ThemeData get _outlinedDarkTheme => _darkTheme.copyWith(
-    cardTheme: _outlinedDarkCardTheme,
-  );
+  ThemeData get _outlinedDarkTheme =>
+      _darkTheme.copyWith(cardTheme: _outlinedDarkCardTheme);
 
   ThemeData get darkTheme => outlined ? _outlinedDarkTheme : _darkTheme;
 

@@ -6,9 +6,7 @@ class SliverBottomPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SliverToBoxAdapter(
-      child: ListBottomPadding(),
-    );
+    return const SliverToBoxAdapter(child: ListBottomPadding());
   }
 }
 
@@ -19,7 +17,7 @@ class ListBottomPadding extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height:
-          LayoutConstants.mediumPadding + MediaQuery.of(context).padding.bottom,
+          LayoutConstants.mediumPadding + MediaQuery.paddingOf(context).bottom,
     );
   }
 }

@@ -9,11 +9,13 @@ import 'package:kover/widgets/lists/series_sliver_grid.dart';
 class CollapsibleSection extends HookConsumerWidget {
   final String title;
   final List<SeriesModel> series;
+  final bool showTitle;
 
   const CollapsibleSection({
     super.key,
     required this.title,
     required this.series,
+    this.showTitle = true,
   });
 
   @override
@@ -29,27 +31,52 @@ class CollapsibleSection extends HookConsumerWidget {
 
     return SliverMainAxisGroup(
       slivers: [
-        SliverPadding(
-          padding: LayoutConstants.smallEdgeInsets,
-          sliver: SliverToBoxAdapter(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.headlineMedium),
-                TextButton(
-                  onPressed: () {
-                    showAll.value = !showAll.value;
-                  },
-                  child: Text(
-                    showAll.value
-                        ? context.l10n.showLess
-                        : context.l10n.showAll,
+        if (showTitle)
+          SliverPadding(
+            padding: LayoutConstants.smallEdgeInsets,
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                ),
-              ],
+                  TextButton(
+                    onPressed: () {
+                      showAll.value = !showAll.value;
+                    },
+                    child: Text(
+                      showAll.value
+                          ? context.l10n.showLess
+                          : context.l10n.showAll,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        if (!showTitle)
+          SliverPadding(
+            padding: LayoutConstants.smallEdgeInsets,
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      showAll.value = !showAll.value;
+                    },
+                    child: Text(
+                      showAll.value
+                          ? context.l10n.showLess
+                          : context.l10n.showAll,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         SliverPadding(
           padding: const EdgeInsetsGeometry.symmetric(
             horizontal: LayoutConstants.smallPadding,

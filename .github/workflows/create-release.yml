@@ -72,6 +72,9 @@ jobs:
             -alias release -dname "CN=Release" \
             -storepass android -keypass android
 
+      - name: Install dependencies
+        run: flutter pub get
+
       - name: Codegen
         run: |
           dart run build_runner build --delete-conflicting-outputs

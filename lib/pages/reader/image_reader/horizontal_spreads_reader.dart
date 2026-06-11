@@ -64,10 +64,7 @@ class HorizontalSpreadsReader extends HookConsumerWidget {
 }
 
 class _SpreadsContent extends ConsumerWidget {
-  const _SpreadsContent({
-    required this.seriesId,
-    required this.chapterId,
-  });
+  const _SpreadsContent({required this.seriesId, required this.chapterId});
 
   final int seriesId;
   final int chapterId;
@@ -103,9 +100,7 @@ class _SpreadsContent extends ConsumerWidget {
                   currentSpread: navState.currentSpread,
                 ),
               ),
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
+              const Center(child: CircularProgressIndicator()),
             ],
           ],
         );
@@ -114,9 +109,7 @@ class _SpreadsContent extends ConsumerWidget {
           return content;
         }
 
-        return SafeArea(
-          child: content,
-        );
+        return SafeArea(child: content);
       },
     );
   }
@@ -142,9 +135,7 @@ class _ImageSpreadsReaderContent extends HookConsumerWidget {
       chapterId: chapterId,
     );
 
-    final settings = ref.watch(
-      imageReaderSettingsProvider(seriesId: seriesId),
-    );
+    final settings = ref.watch(imageReaderSettingsProvider(seriesId: seriesId));
     final spreads = ref.watch(
       spreadsProvider(seriesId: seriesId, chapterId: chapterId),
     );
@@ -211,8 +202,8 @@ class _ImageSpreadsReaderContent extends HookConsumerWidget {
                         }
 
                         final width =
-                            (MediaQuery.of(context).size.width *
-                                    MediaQuery.of(context).devicePixelRatio)
+                            (MediaQuery.sizeOf(context).width *
+                                    MediaQuery.devicePixelRatioOf(context))
                                 .toInt();
 
                         final imageCacheWidth = spread.length == 1
@@ -230,9 +221,7 @@ class _ImageSpreadsReaderContent extends HookConsumerWidget {
                         );
                       })
                       .interleave(
-                        SizedBox.square(
-                          dimension: settings.spreadReaderGap,
-                        ),
+                        SizedBox.square(dimension: settings.spreadReaderGap),
                       )
                       .toList(),
                 );
@@ -269,8 +258,8 @@ class _RenderPreviousPages extends ConsumerWidget {
             .toList();
 
         final cacheWidth =
-            (MediaQuery.of(context).size.width *
-                MediaQuery.of(context).devicePixelRatio) ~/
+            (MediaQuery.sizeOf(context).width *
+                MediaQuery.devicePixelRatioOf(context)) ~/
             2;
 
         return Stack(
@@ -308,10 +297,7 @@ class _RenderPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Async(
       asyncValue: ref.watch(
-        imagePageProvider(
-          chapterId: chapterId,
-          page: page,
-        ),
+        imagePageProvider(chapterId: chapterId, page: page),
       ),
       data: (data) {
         return _OrientationDetector(
@@ -365,10 +351,7 @@ class _OrientationDetector extends HookWidget {
       final stream = image.image.resolve(const ImageConfiguration());
       final listener = ImageStreamListener((ImageInfo info, bool sync) {
         onRendered(
-          Size(
-            info.image.width.toDouble(),
-            info.image.height.toDouble(),
-          ),
+          Size(info.image.width.toDouble(), info.image.height.toDouble()),
         );
       });
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kover/l10n/app_localizations.dart';
+import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/utils/logging.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -8,6 +10,7 @@ class Async<T> extends StatelessWidget {
   final Widget Function(T) data;
   final Widget Function()? loading;
   final Widget Function(Object, StackTrace)? error;
+  final VoidCallback? onRetry;
 
   const Async({
     super.key,
@@ -15,6 +18,7 @@ class Async<T> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.onRetry,
   });
 
   @override
@@ -25,10 +29,8 @@ class Async<T> extends StatelessWidget {
           loading ?? () => const Center(child: CircularProgressIndicator()),
       error:
           error ??
-          (error, stack) => _Error(
-            error: error,
-            stacktrace: stack,
-          ),
+          (error, stack) =>
+              _Error(error: error, stacktrace: stack, onRetry: onRetry),
     );
   }
 }
@@ -39,6 +41,7 @@ class Async2<T1, T2> extends StatelessWidget {
   final Widget Function(T1, T2) data;
   final Widget Function()? loading;
   final Widget Function(Object, StackTrace)? error;
+  final VoidCallback? onRetry;
 
   const Async2({
     super.key,
@@ -47,6 +50,7 @@ class Async2<T1, T2> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.onRetry,
   });
 
   @override
@@ -59,12 +63,14 @@ class Async2<T1, T2> extends StatelessWidget {
           _Error(
             error: asyncValue1.error!,
             stacktrace: asyncValue1.stackTrace!,
+            onRetry: onRetry,
           );
     } else if (asyncValue2.hasError) {
       return error?.call(asyncValue2.error!, asyncValue2.stackTrace!) ??
           _Error(
             error: asyncValue2.error!,
             stacktrace: asyncValue2.stackTrace!,
+            onRetry: onRetry,
           );
     }
 
@@ -79,6 +85,7 @@ class Async3<T1, T2, T3> extends StatelessWidget {
   final Widget Function(T1, T2, T3) data;
   final Widget Function()? loading;
   final Widget Function(Object, StackTrace)? error;
+  final VoidCallback? onRetry;
 
   const Async3({
     super.key,
@@ -88,6 +95,7 @@ class Async3<T1, T2, T3> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.onRetry,
   });
 
   @override
@@ -102,18 +110,21 @@ class Async3<T1, T2, T3> extends StatelessWidget {
           _Error(
             error: asyncValue1.error!,
             stacktrace: asyncValue1.stackTrace!,
+            onRetry: onRetry,
           );
     } else if (asyncValue2.hasError) {
       return error?.call(asyncValue2.error!, asyncValue2.stackTrace!) ??
           _Error(
             error: asyncValue2.error!,
             stacktrace: asyncValue2.stackTrace!,
+            onRetry: onRetry,
           );
     } else if (asyncValue3.hasError) {
       return error?.call(asyncValue3.error!, asyncValue3.stackTrace!) ??
           _Error(
             error: asyncValue3.error!,
             stacktrace: asyncValue3.stackTrace!,
+            onRetry: onRetry,
           );
     }
 
@@ -130,6 +141,7 @@ class AsyncSliver<T> extends StatelessWidget {
   final Widget Function(T) data;
   final Widget Function()? loading;
   final Widget Function(Object, StackTrace)? error;
+  final VoidCallback? onRetry;
 
   const AsyncSliver({
     super.key,
@@ -137,6 +149,7 @@ class AsyncSliver<T> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.onRetry,
   });
 
   @override
@@ -152,10 +165,7 @@ class AsyncSliver<T> extends StatelessWidget {
           error ??
           (error, stack) {
             return SliverToBoxAdapter(
-              child: _Error(
-                error: error,
-                stacktrace: stack,
-              ),
+              child: _Error(error: error, stacktrace: stack, onRetry: onRetry),
             );
           },
     );
@@ -165,19 +175,28 @@ class AsyncSliver<T> extends StatelessWidget {
 class _Error extends StatelessWidget {
   final Object error;
   final StackTrace stacktrace;
-  const _Error({required this.error, required this.stacktrace});
+  final VoidCallback? onRetry;
+  const _Error({required this.error, required this.stacktrace, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
-    log.e(
-      'Provider errored',
-      error: error,
-      stackTrace: stacktrace,
-    );
+    log.e('Provider errored', error: error, stackTrace: stacktrace);
     return Center(
-      child: Icon(
-        LucideIcons.circleX,
-        color: Theme.of(context).colorScheme.error,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: LayoutConstants.smallPadding,
+        children: [
+          Icon(LucideIcons.circleX, color: Theme.of(context).colorScheme.error),
+          if (onRetry != null)
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(
+                LucideIcons.rotateCcw,
+                size: LayoutConstants.smallIcon,
+              ),
+              label: Text(context.l10n.retry),
+            ),
+        ],
       ),
     );
   }

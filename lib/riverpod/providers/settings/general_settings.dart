@@ -13,6 +13,7 @@ sealed class GeneralSettingsState with _$GeneralSettingsState {
   const factory GeneralSettingsState({
     @Default('en') String localeCode,
     @Default(false) bool sendDiagnostics,
+    @Default(0.9) double textScaleFactor,
   }) = _GeneralSettingsState;
 
   factory GeneralSettingsState.fromJson(Map<String, Object?> json) =>
@@ -42,5 +43,11 @@ class GeneralSettings extends _$GeneralSettings {
     final current = await future;
     log.i('set localeCode to $value');
     state = AsyncData(current.copyWith(localeCode: value));
+  }
+
+  Future<void> setTextScaleFactor(double value) async {
+    final current = await future;
+    log.i('set textScaleFactor to $value');
+    state = AsyncData(current.copyWith(textScaleFactor: value));
   }
 }

@@ -7,6 +7,7 @@ import 'package:kover/utils/constants/kover_icons.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/settings/boolean_option.dart';
 import 'package:kover/widgets/settings/choice_option.dart';
+import 'package:kover/widgets/settings/numeric_option.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -76,19 +77,25 @@ class GeneralSettings extends ConsumerWidget {
                       title: l10n.language,
                       icon: LucideIcons.languages,
                       options: [
-                        ChoiceOptionEntry(
-                          value: 'en',
-                          label: l10n.english,
-                        ),
-                        ChoiceOptionEntry(
-                          value: 'zh',
-                          label: l10n.chinese,
-                        ),
+                        ChoiceOptionEntry(value: 'en', label: l10n.english),
+                        ChoiceOptionEntry(value: 'zh', label: l10n.chinese),
                       ],
                       value: generalSettings.localeCode,
                       onChanged: (value) => ref
                           .read(generalSettingsProvider.notifier)
                           .setLocaleCode(value),
+                    ),
+                    NumericOption(
+                      title: l10n.textSize,
+                      icon: LucideIcons.aLargeSmall,
+                      value: generalSettings.textScaleFactor,
+                      min: 0.7,
+                      max: 1.3,
+                      step: 0.05,
+                      decimalPlaces: 2,
+                      onChanged: (value) => ref
+                          .read(generalSettingsProvider.notifier)
+                          .setTextScaleFactor(value),
                     ),
                     BooleanOption(
                       title: l10n.anonymousDiagnostics,

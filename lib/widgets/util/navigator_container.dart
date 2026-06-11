@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/l10n/app_localizations.dart';
@@ -8,9 +9,10 @@ import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/utils/safe_platform.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:kover/widgets/util/monitoring_opt_out_popup.dart';
+import 'package:kover/widgets/util/network_switch_listener.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class NavigatorContainer extends ConsumerWidget {
+class NavigatorContainer extends HookConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   const NavigatorContainer({super.key, required this.navigationShell});
@@ -20,23 +22,28 @@ class NavigatorContainer extends ConsumerWidget {
     final oneOffs = ref.watch(oneOffsProvider);
     final l10n = context.l10n;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      oneOffs.whenData((oneOffs) async {
-        if (!oneOffs.monitoringOptOutPopupShown) {
-          await showDialog(
-            context: context,
-            builder: (context) => const MonitoringOptOutPopup(),
-          );
-          await ref
-              .read(oneOffsProvider.notifier)
-              .setMonitoringOptOutPopupShown();
-        }
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        oneOffs.whenData((oneOffs) async {
+          if (!oneOffs.monitoringOptOutPopupShown && ref.mounted) {
+            await showDialog(
+              context: context,
+              builder: (context) => const MonitoringOptOutPopup(),
+            );
+            if (ref.mounted) {
+              await ref
+                  .read(oneOffsProvider.notifier)
+                  .setMonitoringOptOutPopupShown();
+            }
+          }
+        });
       });
-    });
+      return null;
+    }, const []);
 
     return Scaffold(
       extendBody: true,
-      body: navigationShell,
+      body: NetworkSwitchListener(child: navigationShell),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
           left: LayoutConstants.mediumPadding,
@@ -66,10 +73,7 @@ class NavigatorContainer extends ConsumerWidget {
                 child: NavigationBar(
                   selectedIndex: navigationShell.currentIndex,
                   onDestinationSelected: (index) {
-                    navigationShell.goBranch(
-                      index,
-                      initialLocation: true,
-                    );
+                    navigationShell.goBranch(index, initialLocation: true);
                   },
                   destinations: [
                     NavigationDestination(

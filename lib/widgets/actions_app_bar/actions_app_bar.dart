@@ -5,11 +5,13 @@ import 'package:kover/widgets/actions_app_bar/search_button.dart';
 import 'package:kover/widgets/actions_app_bar/sync_button.dart';
 
 class ActionsAppBar extends StatelessWidget {
-  const ActionsAppBar({super.key});
+  final String? title;
+
+  const ActionsAppBar({super.key, this.title});
 
   @override
   Widget build(BuildContext context) {
-    return const SliverAppBar(
+    return SliverAppBar(
       pinned: true,
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
@@ -17,9 +19,10 @@ class ActionsAppBar extends StatelessWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       actionsPadding: LayoutConstants.smallEdgeInsets,
-      actions: [
-        _ActionsBar(),
-      ],
+      title: title != null
+          ? Text(title!, style: Theme.of(context).textTheme.headlineMedium)
+          : null,
+      actions: const [_ActionsBar()],
     );
   }
 }
@@ -47,10 +50,7 @@ class _ActionsBar extends ConsumerWidget {
         child: Row(
           spacing: LayoutConstants.smallPadding,
           mainAxisSize: MainAxisSize.min,
-          children: [
-            SearchButton(),
-            SyncButton(),
-          ],
+          children: [SearchButton(), SyncButton()],
         ),
       ),
     );

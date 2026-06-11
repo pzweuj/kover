@@ -34,10 +34,7 @@ class DetailAppBar extends HookConsumerWidget {
     return AdaptiveSliverAppBar(
       title: CoverAppBarTitle(
         cover: collapsedContinueButton,
-        title: Text(
-          title,
-          overflow: .fade,
-        ),
+        title: Text(title, overflow: .fade),
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(4.0),
@@ -69,7 +66,7 @@ class DetailAppBar extends HookConsumerWidget {
                 const SizedBox.square(dimension: kToolbarHeight),
                 Text(
                   title,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: .ellipsis,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
@@ -157,7 +154,7 @@ class ContinuePointButton extends ConsumerWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: LayoutConstants.smallEdgeInsets,
           child: Row(
             spacing: LayoutConstants.mediumPadding,
             mainAxisAlignment: .center,
@@ -250,11 +247,7 @@ class TitleContinueButton extends ConsumerWidget {
   final Widget child;
   final VoidCallback? onTap;
 
-  const TitleContinueButton({
-    super.key,
-    required this.child,
-    this.onTap,
-  });
+  const TitleContinueButton({super.key, required this.child, this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -263,9 +256,7 @@ class TitleContinueButton extends ConsumerWidget {
         Positioned.fill(child: child),
         Material(
           color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-          ),
+          child: InkWell(onTap: onTap),
         ),
       ],
     );

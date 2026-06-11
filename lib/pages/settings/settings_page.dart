@@ -18,16 +18,12 @@ class SettingsPage extends ConsumerWidget {
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            SliverAppBar.large(
-              title: Text(context.l10n.settings),
-            ),
-            SliverToBoxAdapter(child: CredentialsSettings()),
-            SliverToBoxAdapter(child: GeneralSettings()),
-            SliverToBoxAdapter(child: DataManagementSettings()),
-            SliverToBoxAdapter(
-              child: Center(child: VersionLabel()),
-            ),
-            SliverBottomPadding(),
+            SliverAppBar.large(title: Text(context.l10n.settings)),
+            const SliverToBoxAdapter(child: CredentialsSettings()),
+            const SliverToBoxAdapter(child: GeneralSettings()),
+            const SliverToBoxAdapter(child: DataManagementSettings()),
+            SliverToBoxAdapter(child: Center(child: VersionLabel())),
+            const SliverBottomPadding(),
           ],
         ),
       ),

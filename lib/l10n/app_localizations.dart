@@ -78,7 +78,7 @@ class AppLocalizations {
   String get noThanks => _t('No, thanks', '不用了，谢谢');
   String get imIn => _t('I\\\'m in!', '我同意');
   String get home => _t('Home', '首页');
-  String get wantToRead => _t('Want to Read', '想读');
+  String get wantToRead => _t('Want to Read', '收藏');
   String get menu => _t('Menu', '菜单');
   String get allSeries => _t('All Series', '全部系列');
   String get collections => _t('Collections', '合集');
@@ -114,8 +114,8 @@ class AppLocalizations {
   String get removeDownload => _t('Remove Download', '移除下载');
   String get cancelAll => _t('Cancel All', '全部取消');
   String get noDownloadsInQueue => _t('No downloads in queue', '下载队列为空');
-  String get addToWantToRead => _t('Add to Want to Read', '添加到想读');
-  String get removeFromWantToRead => _t('Remove from Want to Read', '从想读中移除');
+  String get addToWantToRead => _t('Add to Want to Read', '添加到收藏');
+  String get removeFromWantToRead => _t('Remove from Want to Read', '从收藏中移除');
   String get markRead => _t('Mark Read', '标为已读');
   String get markUnread => _t('Mark Unread', '标为未读');
   String get refreshMetadata => _t('Refresh Metadata', '刷新元数据');
@@ -208,6 +208,9 @@ class AppLocalizations {
   String wordCount(String count) => isZh ? '$count 字' : '$count words';
   String remainingHours(String hours) => isZh ? '约 $hours 小时' : '~$hours hours';
   String pages(String count) => isZh ? '$count 页' : '$count pages';
+  String get savedSuccessfully => _t('Saved', '已保存');
+  String get networkSwitched => _t('Network switched', '网络已切换');
+  String get textSize => _t('Text Size', '界面字体大小');
 }
 
 extension AppLocalizationsX on BuildContext {

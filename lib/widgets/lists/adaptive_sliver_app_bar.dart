@@ -1,11 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/utils/layout_constants.dart';
-import 'package:kover/widgets/util/measured_widget.dart';
 
 class AdaptiveSliverAppBar extends HookConsumerWidget {
   final PreferredSizeWidget? bottom;
@@ -25,29 +22,17 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final topPadding = MediaQuery.of(context).padding.top;
+    final topPadding = MediaQuery.paddingOf(context).top;
     final screenHeight = MediaQuery.sizeOf(context).height;
 
     final isCollapsed = useState(false);
-    final infoHeight = useState(360.0);
 
-    final minFlexibleHeight = useMemoized(
-      () => kToolbarHeight + topPadding + (bottom?.preferredSize.height ?? 0.0),
-      [topPadding, bottom],
-    );
-    final expandedHeight = useMemoized(() {
-      final bottomHeight = bottom?.preferredSize.height ?? 0.0;
-      final measuredHeight = infoHeight.value + bottomHeight;
-      final minExpandedHeight = minFlexibleHeight + 220.0;
-      final maxExpandedHeight = math.max(
-        minExpandedHeight,
-        screenHeight * 0.72,
-      );
+    final minFlexibleHeight =
+        kToolbarHeight + topPadding + (bottom?.preferredSize.height ?? 0.0);
 
-      return measuredHeight
-          .clamp(minExpandedHeight, maxExpandedHeight)
-          .toDouble();
-    }, [infoHeight.value, bottom, minFlexibleHeight, screenHeight]);
+    final expandedHeight = (screenHeight * 0.4)
+        .clamp(minFlexibleHeight + 200.0, screenHeight * 0.5)
+        .toDouble();
 
     return SliverAppBar(
       title: isCollapsed.value
@@ -76,22 +61,8 @@ class AdaptiveSliverAppBar extends HookConsumerWidget {
             child: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  if (background != null)
-                    Positioned.fill(
-                      child:
-                          background ??
-                          Container(color: Theme.of(context).primaryColor),
-                    ),
-                  SafeArea(
-                    child: MeasuredWidget(
-                      onSizeMeasured: (size) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          infoHeight.value = size.height;
-                        });
-                      },
-                      child: child,
-                    ),
-                  ),
+                  if (background != null) Positioned.fill(child: background!),
+                  SafeArea(child: SingleChildScrollView(child: child)),
                 ],
               ),
             ),
