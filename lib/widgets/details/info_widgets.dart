@@ -59,8 +59,17 @@ class WantToReadToggle extends ConsumerWidget {
       asyncValue: wantToRead,
       data: (data) {
         return IconButton(
-          icon: Icon(data ? LucideIcons.star : LucideIcons.starOff),
-          color: data ? Theme.of(context).colorScheme.primary : null,
+          icon: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, animation) =>
+                ScaleTransition(scale: animation, child: child),
+            child: Icon(
+              data ? LucideIcons.heart : LucideIcons.heartOff,
+              key: ValueKey(data),
+              fill: data ? 1.0 : 0.0,
+            ),
+          ),
+          color: data ? Theme.of(context).colorScheme.error : null,
           onPressed: () async {
             final notifier = ref.read(
               wantToReadProvider(seriesId: seriesId).notifier,

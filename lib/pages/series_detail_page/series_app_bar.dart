@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kover/l10n/app_localizations.dart';
-import 'package:kover/models/series_model.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
 import 'package:kover/riverpod/providers/download.dart';
 import 'package:kover/riverpod/providers/reader.dart';
-import 'package:kover/riverpod/providers/router.dart';
 import 'package:kover/riverpod/providers/series.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/cards/cover_image.dart';
 import 'package:kover/widgets/context_menu/actions_menu.dart';
-import 'package:kover/widgets/details/detail_app_bar.dart';
 import 'package:kover/widgets/details/info_widgets.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+/// A modern, clean hero section for the series detail page.
+/// Shows the cover image with a gradient overlay, floating navigation
+/// and action buttons.
 class SeriesAppBar extends HookConsumerWidget {
   final int seriesId;
-  final PreferredSizeWidget? bottom;
 
-  const SeriesAppBar({super.key, required this.seriesId, this.bottom});
+  const SeriesAppBar({super.key, required this.seriesId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,14 +26,22 @@ class SeriesAppBar extends HookConsumerWidget {
     final downloadProgress =
         ref.watch(seriesDownloadProgressProvider(seriesId: seriesId)).value ??
         0.0;
-    final progress = ref.watch(seriesProgressProvider(seriesId: seriesId));
 
     return AsyncSliver(
       asyncValue: series,
       data: (data) {
-        return DetailAppBar(
-          title: data.name,
-          progress: progress.value,
+        final screenHeight = MediaQuery.sizeOf(context).height;
+        final expandedHeight =
+            (screenHeight * 0.42).clamp(320.0, screenHeight * 0.52);
+
+        return SliverAppBar(
+          pinned: true,
+          expandedHeight: expandedHeight,
+          backgroundColor: Colors.transparent,
+          leading: _FloatingCircleButton(
+            onTap: () => Navigator.of(context).pop(),
+            child: const Icon(LucideIcons.arrowLeft, size: 20),
+          ),
           actions: [
             WantToReadToggle(seriesId: data.id),
             ActionsMenuButton(
@@ -76,19 +82,58 @@ class SeriesAppBar extends HookConsumerWidget {
               child: const Icon(LucideIcons.ellipsisVertical),
             ),
           ],
-          primaryColor: data.primaryColor,
-          secondaryColor: data.secondaryColor,
-          cover: SeriesCoverImage(
-            seriesId: seriesId,
-            usePlaceholder: false,
-            heroTag: 'series-cover-$seriesId',
-          ),
-          info: _Metadata(series: data),
-          collapsedContinueButton: _SeriesTitleContinueButton(
-            seriesId: seriesId,
-          ),
-          expandedContinueButton: _SeriesContinuePointButton(
-            seriesId: seriesId,
+          flexibleSpace: LayoutBuilder(
+            builder: (context, constraints) {
+              final isCollapsed =
+                  constraints.maxHeight < expandedHeight - 60;
+
+              return FlexibleSpaceBar(
+                title: isCollapsed
+                    ? Text(
+                        data.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                    : null,
+                centerTitle: false,
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Cover image as background
+                    Positioned.fill(
+                      child: SeriesCoverImage(
+                        seriesId: seriesId,
+                        usePlaceholder: true,
+                        fit: BoxFit.cover,
+                        heroTag: 'series-cover-$seriesId',
+                      ),
+                    ),
+                    // Gradient overlay for readability
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.3),
+                              Colors.black.withValues(alpha: 0.0),
+                              Colors.black.withValues(alpha: 0.0),
+                              Colors.black.withValues(alpha: 0.7),
+                            ],
+                            stops: const [0.0, 0.3, 0.6, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -96,106 +141,32 @@ class SeriesAppBar extends HookConsumerWidget {
   }
 }
 
-class _SeriesContinueButtonImage extends ConsumerWidget {
-  final int seriesId;
-  const _SeriesContinueButtonImage({required this.seriesId});
+/// A floating circular button with a blurred background,
+/// used for back navigation and other floating actions.
+class _FloatingCircleButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+
+  const _FloatingCircleButton({required this.child, this.onTap});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final continuePoint = ref.watch(continuePointProvider(seriesId: seriesId));
-
-    return Async(
-      asyncValue: continuePoint,
-      data: (data) => ContinueButtonImage(
-        image: ChapterCoverImage(chapterId: data.id, usePlaceholder: false),
-      ),
-    );
-  }
-}
-
-class _SeriesTitleContinueButton extends ConsumerWidget {
-  final int seriesId;
-
-  const _SeriesTitleContinueButton({required this.seriesId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return TitleContinueButton(
-      child: _SeriesContinueButtonImage(seriesId: seriesId),
-      onTap: () => ReaderRoute(seriesId: seriesId).push(context),
-    );
-  }
-}
-
-class _SeriesContinuePointButton extends ConsumerWidget {
-  final int seriesId;
-
-  const _SeriesContinuePointButton({required this.seriesId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final continuePoint = ref.watch(continuePointProvider(seriesId: seriesId));
-    final progress = ref.watch(
-      continuePointProgressProvider(seriesId: seriesId),
-    );
-
-    return Async(
-      asyncValue: continuePoint,
-      data: (data) => ContinuePointButton(
-        title: data.title,
-        cover: _SeriesContinueButtonImage(seriesId: seriesId),
-        progress: progress.value,
-        onTap: () => ReaderRoute(seriesId: seriesId).push(context),
-      ),
-    );
-  }
-}
-
-class _Metadata extends ConsumerWidget {
-  final SeriesModel series;
-  const _Metadata({required this.series});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final metadata = ref.watch(seriesMetadataProvider(seriesId: series.id));
-    return Async(
-      asyncValue: metadata,
-      data: (metadata) => Column(
-        crossAxisAlignment: .start,
-        spacing: LayoutConstants.largePadding,
-        children: [
-          Wrap(
-            spacing: LayoutConstants.mediumPadding,
-            runSpacing: LayoutConstants.mediumPadding,
-            alignment: .spaceBetween,
-            children: [
-              if ((series.wordCount ?? 0) > 0)
-                WordCount(wordCount: series.wordCount!),
-              Pages(pages: series.pages),
-              RemainingHours(hours: series.avgHoursToRead),
-              if (metadata.releaseYear != null)
-                ReleaseYear(releaseYear: metadata.releaseYear!),
-            ],
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(LayoutConstants.smallPadding),
+      child: Material(
+        color: Colors.black26,
+        shape: const CircleBorder(),
+        clipBehavior: .antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox.square(
+            dimension: 40,
+            child: Center(child: IconTheme(
+              data: const IconThemeData(color: Colors.white, size: 20),
+              child: child,
+            )),
           ),
-          Wrap(
-            spacing: LayoutConstants.mediumPadding,
-            runSpacing: LayoutConstants.mediumPadding,
-            alignment: .spaceBetween,
-            children: [
-              LimitedList(
-                title: context.l10n.writers,
-                items: metadata.writers
-                    .map(
-                      (w) => Text(
-                        w.name,
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
