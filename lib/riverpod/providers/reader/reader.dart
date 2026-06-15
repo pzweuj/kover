@@ -116,6 +116,36 @@ class Reader extends _$Reader {
     });
   }
 
+  Future<void> flushProgress({required int page, String? scrollId}) async {
+    _saveProgressDebounce?.cancel();
+    _saveProgressDebounce = null;
+
+    if (state.isLoading) return;
+    final current = await future;
+
+    log.d(
+      'Flushing progress: page=$page, scrollId=$scrollId, chapter=${current.chapter.id}',
+    );
+
+    if (page >= current.totalPages - 1) {
+      await markComplete();
+      return;
+    }
+
+    await ref
+        .read(readerRepositoryProvider)
+        .saveProgress(
+          ProgressModel(
+            libraryId: current.libraryId,
+            seriesId: current.series.id,
+            volumeId: current.volumeId,
+            chapterId: current.chapter.id,
+            pageNum: page.clamp(0, current.totalPages - 1),
+            bookScrollId: scrollId,
+          ),
+        );
+  }
+
   Future<void> markComplete() async {
     if (state.isLoading) return;
     final current = await future;
