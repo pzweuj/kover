@@ -212,6 +212,12 @@ class AppLocalizations {
   String get networkSwitched => _t('Network switched', '网络已切换');
   String get textSize => _t('Text Size', '界面字体大小');
   String get startupPage => _t('Startup Page', '启动页面');
+  String get showSystemStatusBar =>
+      _t('Show System Status Bar', '显示系统状态栏');
+  String get showSystemStatusBarDescription => _t(
+    'Show the time, signal and battery while reading instead of hiding them.',
+    '阅读时显示时间、信号和电量，而不是隐藏它们。',
+  );
 }
 
 extension AppLocalizationsX on BuildContext {

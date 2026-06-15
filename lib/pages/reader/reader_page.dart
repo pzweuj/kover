@@ -9,6 +9,7 @@ import 'package:kover/pages/reader/image_reader/image_reader.dart';
 import 'package:kover/pages/reader/pdf_reader/pdf_reader.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
 import 'package:kover/riverpod/providers/reader//reader.dart';
+import 'package:kover/riverpod/providers/settings/general_settings.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -35,7 +36,15 @@ class ReaderPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      SystemChrome.setEnabledSystemUIMode(.immersiveSticky);
+      final showStatusBar = ref
+              .read(generalSettingsProvider)
+              .value
+              ?.showSystemStatusBar ??
+          false;
+
+      if (!showStatusBar) {
+        SystemChrome.setEnabledSystemUIMode(.immersiveSticky);
+      }
 
       return () {
         _exitImmersiveMode();

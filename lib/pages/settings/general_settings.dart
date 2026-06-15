@@ -110,6 +110,15 @@ class GeneralSettings extends ConsumerWidget {
                           .read(generalSettingsProvider.notifier)
                           .setDefaultTab(value),
                     ),
+                    BooleanOption(
+                      title: l10n.showSystemStatusBar,
+                      icon: LucideIcons.signal,
+                      description: l10n.showSystemStatusBarDescription,
+                      value: generalSettings.showSystemStatusBar,
+                      onChanged: (value) => ref
+                          .read(generalSettingsProvider.notifier)
+                          .setShowSystemStatusBar(value),
+                    ),
                     NumericOption(
                       title: l10n.textSize,
                       icon: LucideIcons.aLargeSmall,

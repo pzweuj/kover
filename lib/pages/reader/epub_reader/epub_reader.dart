@@ -116,8 +116,31 @@ class EpubReader extends HookConsumerWidget {
                     ),
                   ),
                   if (!navState.ready)
-                    const Positioned.fill(
-                      child: Center(child: CircularProgressIndicator()),
+                    Positioned.fill(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: CircularProgressIndicator(),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '${navState.page + 1} / ${navState.totalPages}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                 ],
               );

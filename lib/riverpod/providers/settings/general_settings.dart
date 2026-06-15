@@ -15,6 +15,7 @@ sealed class GeneralSettingsState with _$GeneralSettingsState {
     @Default(false) bool sendDiagnostics,
     @Default(0.9) double textScaleFactor,
     @Default(0) int defaultTab,
+    @Default(false) bool showSystemStatusBar,
   }) = _GeneralSettingsState;
 
   factory GeneralSettingsState.fromJson(Map<String, Object?> json) =>
@@ -56,5 +57,11 @@ class GeneralSettings extends _$GeneralSettings {
     final current = await future;
     log.i('set defaultTab to $value');
     state = AsyncData(current.copyWith(defaultTab: value));
+  }
+
+  Future<void> setShowSystemStatusBar(bool value) async {
+    final current = await future;
+    log.i('set showSystemStatusBar to $value');
+    state = AsyncData(current.copyWith(showSystemStatusBar: value));
   }
 }
