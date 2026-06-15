@@ -38,7 +38,7 @@ GoRouter router(Ref ref) {
       if (state.uri.path != '/') return null;
       done[0] = true;
 
-      final tab = ref.read(generalSettingsProvider).valueOrNull?.defaultTab ?? 0;
+      final tab = ref.read(generalSettingsProvider).value?.defaultTab ?? 0;
       return switch (tab) {
         1 => const WantToReadRoute().location,
         2 => const LibraryRoute().location,
