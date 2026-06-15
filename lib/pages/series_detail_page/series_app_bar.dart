@@ -31,13 +31,21 @@ class SeriesAppBar extends HookConsumerWidget {
       asyncValue: series,
       data: (data) {
         final screenHeight = MediaQuery.sizeOf(context).height;
-        final expandedHeight =
-            (screenHeight * 0.42).clamp(320.0, screenHeight * 0.52);
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        // Adaptive height: smaller ratio on small screens, larger on tablets
+        final expandedHeight = screenWidth < 400
+            ? (screenHeight * 0.35).clamp(260.0, 360.0)
+            : (screenHeight * 0.42).clamp(300.0, screenHeight * 0.52);
 
         return SliverAppBar(
           pinned: true,
           expandedHeight: expandedHeight,
           backgroundColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          toolbarHeight: kToolbarHeight,
+          leadingWidth: 56,
           leading: _FloatingCircleButton(
             onTap: () => Navigator.of(context).pop(),
             child: const Icon(LucideIcons.arrowLeft, size: 20),
@@ -120,12 +128,32 @@ class SeriesAppBar extends HookConsumerWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.black.withValues(alpha: 0.3),
+                              Colors.black.withValues(alpha: 0.25),
                               Colors.black.withValues(alpha: 0.0),
                               Colors.black.withValues(alpha: 0.0),
-                              Colors.black.withValues(alpha: 0.7),
+                              Colors.black.withValues(alpha: 0.85),
                             ],
-                            stops: const [0.0, 0.3, 0.6, 1.0],
+                            stops: const [0.0, 0.25, 0.55, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Top scrim for button readability
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: kToolbarHeight +
+                            MediaQuery.paddingOf(context).top,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.3),
+                              Colors.transparent,
+                            ],
                           ),
                         ),
                       ),

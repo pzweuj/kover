@@ -112,7 +112,9 @@ class _DetailBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    final hPad = LayoutConstants.mediumPadding;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final hPad = screenWidth < 400 ? 12.0 : LayoutConstants.mediumPadding;
+    final isCompact = screenWidth < 380;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: hPad),
@@ -124,7 +126,10 @@ class _DetailBody extends ConsumerWidget {
           // ── Title ──
           Text(
             series.name,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: (isCompact
+                    ? theme.textTheme.titleLarge
+                    : theme.textTheme.headlineSmall)
+                ?.copyWith(
               fontWeight: FontWeight.bold,
               height: 1.2,
             ),

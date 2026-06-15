@@ -64,12 +64,12 @@ class WantToReadToggle extends ConsumerWidget {
             transitionBuilder: (child, animation) =>
                 ScaleTransition(scale: animation, child: child),
             child: Icon(
-              data ? LucideIcons.heart : LucideIcons.heartOff,
+              LucideIcons.star,
               key: ValueKey(data),
               fill: data ? 1.0 : 0.0,
             ),
           ),
-          color: data ? Theme.of(context).colorScheme.error : null,
+          color: data ? Theme.of(context).colorScheme.primary : null,
           onPressed: () async {
             final notifier = ref.read(
               wantToReadProvider(seriesId: seriesId).notifier,
