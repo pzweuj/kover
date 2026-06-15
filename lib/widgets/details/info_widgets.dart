@@ -7,46 +7,6 @@ import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class LimitedList extends StatelessWidget {
-  final String? title;
-  final List<Widget> items;
-  final int maxItems;
-  const LimitedList({
-    super.key,
-    this.title,
-    required this.items,
-    this.maxItems = 3,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final display = items.take(maxItems);
-    return Column(
-      mainAxisSize: .min,
-      crossAxisAlignment: .start,
-      children: [
-        if (title != null)
-          Text(title!, style: Theme.of(context).textTheme.titleMedium),
-        if (items.isEmpty)
-          const Text('-')
-        else
-          Wrap(
-            spacing: LayoutConstants.mediumPadding,
-            crossAxisAlignment: .center,
-            children: [
-              for (final item in display) item,
-              if (display.length < items.length)
-                Text(
-                  context.l10n.moreCount(items.length - display.length),
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-            ],
-          ),
-      ],
-    );
-  }
-}
-
 class WantToReadToggle extends ConsumerWidget {
   final int seriesId;
   const WantToReadToggle({super.key, required this.seriesId});
@@ -102,29 +62,6 @@ class WordCount extends StatelessWidget {
         Text(
           context.l10n.wordCount(wordCount.prettyInt()),
         ),
-      ],
-    );
-  }
-}
-
-class ReleaseYear extends StatelessWidget {
-  final int releaseYear;
-  const ReleaseYear({
-    super.key,
-    required this.releaseYear,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: .min,
-      spacing: LayoutConstants.smallPadding,
-      children: [
-        const Icon(
-          LucideIcons.calendar,
-          size: LayoutConstants.smallIcon,
-        ),
-        Text(releaseYear.toString()),
       ],
     );
   }
