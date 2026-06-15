@@ -64,9 +64,8 @@ class WantToReadToggle extends ConsumerWidget {
             transitionBuilder: (child, animation) =>
                 ScaleTransition(scale: animation, child: child),
             child: Icon(
-              LucideIcons.star,
+              data ? Icons.star : LucideIcons.star,
               key: ValueKey(data),
-              fill: data ? 1.0 : 0.0,
             ),
           ),
           color: data ? Theme.of(context).colorScheme.primary : null,

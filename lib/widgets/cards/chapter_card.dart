@@ -66,7 +66,7 @@ class ChapterCard extends HookConsumerWidget {
           coverImage: ChapterCoverImage(chapterId: chapterId),
           progress: progress,
           downloadStatusIcon: DownloadStatusIcon(progress: downloadProgress),
-          onTap: () => ChapterDetailRoute(
+          onTap: () => ReaderRoute(
             seriesId: seriesId,
             chapterId: chapterId,
           ).push(context),

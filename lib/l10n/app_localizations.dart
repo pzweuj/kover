@@ -211,6 +211,7 @@ class AppLocalizations {
   String get savedSuccessfully => _t('Saved', '已保存');
   String get networkSwitched => _t('Network switched', '网络已切换');
   String get textSize => _t('Text Size', '界面字体大小');
+  String get startupPage => _t('Startup Page', '启动页面');
 }
 
 extension AppLocalizationsX on BuildContext {

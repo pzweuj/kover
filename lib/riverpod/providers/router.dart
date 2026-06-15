@@ -13,6 +13,7 @@ import 'package:kover/pages/series_detail_page/series_detail_page.dart';
 import 'package:kover/pages/series_detail_page/volume_detail_page/volume_detail_page.dart';
 import 'package:kover/pages/settings/settings_page.dart';
 import 'package:kover/pages/want_to_read_page/want_to_read_page.dart';
+import 'package:kover/riverpod/providers/settings/general_settings.dart';
 import 'package:kover/widgets/util/navigator_container.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -23,9 +24,27 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 @riverpod
 GoRouter router(Ref ref) {
+  final done = <bool>[false];
+
+  ref.listen(generalSettingsProvider, (_, _) {
+    if (!done[0]) ref.invalidate(routerProvider);
+  }, fireImmediately: false);
+
   return GoRouter(
     navigatorKey: navigatorKey,
     initialLocation: '/',
+    redirect: (context, state) {
+      if (done[0]) return null;
+      if (state.uri.path != '/') return null;
+      done[0] = true;
+
+      final tab = ref.read(generalSettingsProvider).valueOrNull?.defaultTab ?? 0;
+      return switch (tab) {
+        1 => const WantToReadRoute().location,
+        2 => const LibraryRoute().location,
+        _ => null,
+      };
+    },
     routes: $appRoutes,
     observers: [SentryNavigatorObserver()],
   );

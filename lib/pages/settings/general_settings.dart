@@ -85,6 +85,31 @@ class GeneralSettings extends ConsumerWidget {
                           .read(generalSettingsProvider.notifier)
                           .setLocaleCode(value),
                     ),
+                    ChoiceOption<int>(
+                      title: l10n.startupPage,
+                      icon: LucideIcons.layoutDashboard,
+                      options: [
+                        ChoiceOptionEntry(
+                          value: 0,
+                          label: l10n.home,
+                          icon: LucideIcons.house,
+                        ),
+                        ChoiceOptionEntry(
+                          value: 1,
+                          label: l10n.wantToRead,
+                          icon: LucideIcons.star,
+                        ),
+                        ChoiceOptionEntry(
+                          value: 2,
+                          label: l10n.menu,
+                          icon: LucideIcons.library,
+                        ),
+                      ],
+                      value: generalSettings.defaultTab,
+                      onChanged: (value) => ref
+                          .read(generalSettingsProvider.notifier)
+                          .setDefaultTab(value),
+                    ),
                     NumericOption(
                       title: l10n.textSize,
                       icon: LucideIcons.aLargeSmall,

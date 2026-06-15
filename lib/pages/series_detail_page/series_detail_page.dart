@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/series_model.dart';
-import 'package:kover/models/volume_model.dart';
 import 'package:kover/pages/series_detail_page/series_app_bar.dart';
 import 'package:kover/riverpod/providers/reader.dart';
 import 'package:kover/riverpod/providers/router.dart';
@@ -16,7 +14,7 @@ import 'package:kover/widgets/util/async_value.dart';
 import 'package:kover/widgets/util/sliver_bottom_padding.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class SeriesDetailPage extends HookConsumerWidget {
+class SeriesDetailPage extends ConsumerWidget {
   final int seriesId;
 
   const SeriesDetailPage({super.key, required this.seriesId});
@@ -28,21 +26,9 @@ class SeriesDetailPage extends HookConsumerWidget {
     final metadata = ref.watch(seriesMetadataProvider(seriesId: seriesId));
     final progress = ref.watch(seriesProgressProvider(seriesId: seriesId));
 
-    final expandedVolumes = useState<Set<int>>({});
-    final hasAutoExpanded = useRef(false);
     final continuePoint = ref.watch(
       continuePointStreamProvider(seriesId: seriesId),
     );
-
-    // Auto-expand the volume containing the current reading chapter
-    useEffect(() {
-      final volumeId = continuePoint.value?.volumeId;
-      if (volumeId != null && !hasAutoExpanded.value) {
-        expandedVolumes.value = {volumeId};
-        hasAutoExpanded.value = true;
-      }
-      return null;
-    }, [continuePoint.value?.volumeId]);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -63,8 +49,6 @@ class SeriesDetailPage extends HookConsumerWidget {
                     details: detailsData,
                     metadata: metadata,
                     progress: progress.value,
-                    continuePoint: continuePoint,
-                    expandedVolumes: expandedVolumes,
                   ),
                 ),
               ),
@@ -95,8 +79,6 @@ class _DetailBody extends ConsumerWidget {
   final SeriesDetailModel details;
   final AsyncValue<SeriesMetadataModel> metadata;
   final double? progress;
-  final AsyncValue continuePoint;
-  final ValueNotifier<Set<int>> expandedVolumes;
 
   const _DetailBody({
     required this.seriesId,
@@ -104,8 +86,6 @@ class _DetailBody extends ConsumerWidget {
     required this.details,
     required this.metadata,
     required this.progress,
-    required this.continuePoint,
-    required this.expandedVolumes,
   });
 
   @override
@@ -209,13 +189,19 @@ class _DetailBody extends ConsumerWidget {
 
           if (details.volumes.isNotEmpty) ...[
             _SectionHeader(
-              title: l10n.countLabel(l10n.volumes, details.volumes.length),
+              title: l10n.countLabel(
+                l10n.volumes,
+                details.volumes.fold(
+                  0,
+                  (sum, v) => sum + v.chapters.length,
+                ),
+              ),
             ),
-            const SizedBox(height: LayoutConstants.smallerPadding),
-            _VolumesAccordion(
+            InlineChaptersGrid(
               seriesId: seriesId,
-              volumes: details.volumes,
-              expandedVolumes: expandedVolumes,
+              chapters: details.volumes
+                  .expand((v) => v.chapters)
+                  .toList(),
             ),
             const SizedBox(height: LayoutConstants.mediumPadding),
           ],
@@ -437,92 +423,6 @@ class _SectionHeader extends StatelessWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Volumes Accordion
-// ---------------------------------------------------------------------------
-class _VolumesAccordion extends StatelessWidget {
-  final int seriesId;
-  final List<VolumeModel> volumes;
-  final ValueNotifier<Set<int>> expandedVolumes;
-
-  const _VolumesAccordion({
-    required this.seriesId,
-    required this.volumes,
-    required this.expandedVolumes,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card.filled(
-      clipBehavior: .antiAlias,
-      child: Column(
-        children: [
-          ...volumes.map(
-            (volume) => _VolumeExpansionTile(
-              seriesId: seriesId,
-              volume: volume,
-              isExpanded: expandedVolumes.value.contains(volume.id),
-              onExpansionChanged: (expanded) {
-                final current = Set<int>.from(expandedVolumes.value);
-                if (expanded) {
-                  current.add(volume.id);
-                } else {
-                  current.remove(volume.id);
-                }
-                expandedVolumes.value = current;
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VolumeExpansionTile extends StatelessWidget {
-  final int seriesId;
-  final VolumeModel volume;
-  final bool isExpanded;
-  final ValueChanged<bool> onExpansionChanged;
-
-  const _VolumeExpansionTile({
-    required this.seriesId,
-    required this.volume,
-    required this.isExpanded,
-    required this.onExpansionChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpansionTile(
-      key: ValueKey('volume-${volume.id}'),
-      initiallyExpanded: isExpanded,
-      maintainState: false,
-      onExpansionChanged: onExpansionChanged,
-      tilePadding: const EdgeInsets.symmetric(
-        horizontal: LayoutConstants.mediumPadding,
-      ),
-      childrenPadding: LayoutConstants.smallerEdgeInsets,
-      title: Text(
-        volume.name,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        context.l10n.countLabel(
-          context.l10n.chapters,
-          volume.chapters.length,
-        ),
-      ),
-      children: [
-        InlineChaptersGrid(
-          seriesId: seriesId,
-          chapters: volume.chapters,
-        ),
-      ],
     );
   }
 }
