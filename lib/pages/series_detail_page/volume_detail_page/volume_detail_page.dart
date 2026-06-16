@@ -6,6 +6,7 @@ import 'package:kover/riverpod/providers/volume.dart';
 import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/details/summary.dart';
 import 'package:kover/widgets/lists/chapters_grid.dart';
+import 'package:kover/widgets/util/async_value.dart';
 import 'package:kover/widgets/util/sliver_bottom_padding.dart';
 
 class VolumeDetailPage extends ConsumerWidget {
@@ -18,9 +19,7 @@ class VolumeDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final volume = ref.watch(volumeProvider(volumeId: volumeId)).value;
-
-    if (volume == null) return const SizedBox.shrink();
+    final volumeAsync = ref.watch(volumeProvider(volumeId: volumeId));
 
     return Scaffold(
       body: CustomScrollView(
@@ -28,45 +27,51 @@ class VolumeDetailPage extends ConsumerWidget {
           VolumeAppBar(
             volumeId: volumeId,
           ),
-          if (volume.chapters.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.only(
-                top: LayoutConstants.mediumPadding,
-                right: LayoutConstants.mediumPadding,
-                left: LayoutConstants.mediumPadding,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    Summary(
-                      summary: volume.chapters.first.summary,
+          AsyncSliver(
+            asyncValue: volumeAsync,
+            data: (volume) => SliverMainAxisGroup(
+              slivers: [
+                if (volume.chapters.isNotEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.only(
+                      top: LayoutConstants.mediumPadding,
+                      right: LayoutConstants.mediumPadding,
+                      left: LayoutConstants.mediumPadding,
                     ),
-                  ],
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Summary(
+                            summary: volume.chapters.first.summary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                SliverPadding(
+                  padding: const EdgeInsetsGeometry.symmetric(
+                    horizontal: LayoutConstants.mediumPadding,
+                    vertical: LayoutConstants.smallPadding,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      context.l10n.chapters,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          SliverPadding(
-            padding: const EdgeInsetsGeometry.symmetric(
-              horizontal: LayoutConstants.mediumPadding,
-              vertical: LayoutConstants.smallPadding,
-            ),
-            sliver: SliverToBoxAdapter(
-              child: Text(
-                context.l10n.chapters,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: LayoutConstants.mediumPadding,
+                  ),
+                  sliver: ChaptersGrid(
+                    seriesId: volume.seriesId,
+                    chapters: volume.chapters,
+                  ),
+                ),
+              ],
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: LayoutConstants.mediumPadding,
-            ),
-            sliver: ChaptersGrid(
-              seriesId: volume.seriesId,
-              chapters: volume.chapters,
-            ),
-          ),
-
           const SliverBottomPadding(),
         ],
       ),

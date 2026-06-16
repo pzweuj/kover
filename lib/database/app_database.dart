@@ -135,6 +135,24 @@ class AppDatabase extends _$AppDatabase {
     await customStatement('VACUUM');
   }
 
+  Future<void> _createIndexes() async {
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_series_libraryId ON series(library_id)',
+      'CREATE INDEX IF NOT EXISTS idx_chapters_seriesId ON chapters(series_id)',
+      'CREATE INDEX IF NOT EXISTS idx_chapters_volumeId ON chapters(volume_id)',
+      'CREATE INDEX IF NOT EXISTS idx_reading_progress_seriesId ON reading_progress(series_id)',
+      'CREATE INDEX IF NOT EXISTS idx_reading_progress_volumeId ON reading_progress(volume_id)',
+      'CREATE INDEX IF NOT EXISTS idx_reading_progress_dirty ON reading_progress(dirty)',
+      'CREATE INDEX IF NOT EXISTS idx_want_to_read_dirty ON want_to_read(dirty)',
+      'CREATE INDEX IF NOT EXISTS idx_want_to_read_isWantToRead ON want_to_read(is_want_to_read)',
+      'CREATE INDEX IF NOT EXISTS idx_downloaded_pages_chapterId ON downloaded_pages(chapter_id)',
+      'CREATE INDEX IF NOT EXISTS idx_book_chapters_chapterId ON book_chapters(chapter_id)',
+    ];
+    for (final sql in indexes) {
+      await customStatement(sql);
+    }
+  }
+
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
@@ -176,6 +194,11 @@ class AppDatabase extends _$AppDatabase {
         },
       ),
       beforeOpen: (details) async {
+        await customStatement('PRAGMA busy_timeout = 5000');
+
+        // Add performance indexes (idempotent)
+        await _createIndexes();
+
         // Clear legacy credentials entry from database if present.
         final rows = await (delete(
           riverpodStorage,

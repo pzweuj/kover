@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -65,7 +67,7 @@ class ReaderPage extends HookConsumerWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) return;
 
-        Future.microtask(() async {
+        unawaited(Future.microtask(() async {
           _exitImmersiveMode();
 
           final navState = ref
@@ -118,7 +120,7 @@ class ReaderPage extends HookConsumerWidget {
           }
 
           ref.read(syncManagerProvider.notifier).syncProgress();
-        });
+        }));
       },
       child: Async(
         asyncValue: ref.watch(provider),

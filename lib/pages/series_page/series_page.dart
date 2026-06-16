@@ -12,6 +12,7 @@ import 'package:kover/utils/layout_constants.dart';
 import 'package:kover/widgets/context_menu/context_menu_button.dart';
 import 'package:kover/widgets/details/filter_input_field.dart';
 import 'package:kover/widgets/lists/series_sliver_grid.dart';
+import 'package:kover/widgets/empty_state.dart';
 import 'package:kover/widgets/util/async_value.dart';
 import 'package:kover/widgets/util/sliver_bottom_padding.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart' show LucideIcons;
@@ -152,6 +153,12 @@ class SeriesPage extends HookConsumerWidget {
                 asyncValue: query,
                 data: (search) {
                   final filteredData = controller.text.isEmpty ? data : search;
+                      if (filteredData.isEmpty) {
+                    return const SliverToBoxAdapter(
+                      child: EmptyStateWidget(message: '没有找到匹配的系列'),
+                    );
+                  }
+
                   return SliverPadding(
                     padding: LayoutConstants.smallEdgeInsets,
                     sliver: SeriesSliverGrid(

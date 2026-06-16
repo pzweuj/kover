@@ -1,10 +1,11 @@
 import 'package:html/dom.dart';
+import 'package:kover/utils/html_constants.dart';
 
 extension DocumentFragmentExtensions on DocumentFragment {
   String? paragraphScrollId() {
     final p = querySelector('p');
 
-    return p?.attributes['scroll-id'];
+    return p?.attributes[HtmlConstants.scrollIdAttribute];
   }
 }
 

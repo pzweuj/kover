@@ -431,12 +431,14 @@ class SeriesDao extends DatabaseAccessor<AppDatabase> with _$SeriesDaoMixin {
   Future<void> mergeSeries(Iterable<SeriesCompanion> entries) async {
     final ids = entries.map((e) => e.id.value).toList();
 
-    await batch((batch) {
-      batch.deleteWhere(
-        series,
-        (s) => s.id.isNotIn(ids),
-      );
-      batch.insertAllOnConflictUpdate(series, entries);
+    await transaction(() async {
+      await batch((batch) {
+        batch.deleteWhere(
+          series,
+          (s) => s.id.isNotIn(ids),
+        );
+        batch.insertAllOnConflictUpdate(series, entries);
+      });
     });
   }
 
@@ -534,15 +536,32 @@ class SeriesDao extends DatabaseAccessor<AppDatabase> with _$SeriesDaoMixin {
     await into(wantToRead).insertOnConflictUpdate(entry);
   }
 
-  /// Upsert the provided [entries] batch of series as want-to-read
+  /// Merge server want-to-read list with local data.
+  /// Preserves local dirty entries that haven't been synced yet.
+  /// Removes local non-dirty entries not present on the server.
   Future<void> upsertWantToReadFromSeriesBatch(
     Iterable<SeriesCompanion> entries,
   ) async {
+    final serverSeriesIds = entries.map((s) => s.id.value).toSet();
     final wantToReads = entries.map(
       (s) => WantToReadCompanion(seriesId: s.id),
     );
+
     await transaction(() async {
-      await clearWantToRead();
+      final localEntries = await managers.wantToRead.get();
+      final toRemove = localEntries
+          .where(
+            (e) => !serverSeriesIds.contains(e.seriesId) && !e.dirty,
+          )
+          .map((e) => e.seriesId)
+          .toList();
+
+      if (toRemove.isNotEmpty) {
+        await (delete(
+          wantToRead,
+        )..where((t) => t.seriesId.isIn(toRemove))).go();
+      }
+
       await batch(
         (batch) {
           batch.insertAllOnConflictUpdate(series, entries);

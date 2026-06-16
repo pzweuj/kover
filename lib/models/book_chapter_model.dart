@@ -19,8 +19,8 @@ sealed class BookChapterModel with _$BookChapterModel {
 
   factory BookChapterModel.fromChapterItemDto(BookChapterItem dto) {
     return BookChapterModel(
-      title: dto.title!,
-      page: dto.page!,
+      title: dto.title ?? '',
+      page: dto.page ?? 0,
       children:
           dto.children?.map(BookChapterModel.fromChapterItemDto).toList() ?? [],
     );

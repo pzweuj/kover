@@ -88,8 +88,8 @@ sealed class PersonModel with _$PersonModel {
 
   factory PersonModel.fromPersonDto(PersonDto dto) {
     return PersonModel(
-      id: dto.id!,
-      name: dto.name!,
+      id: dto.id ?? 0,
+      name: dto.name ?? '',
     );
   }
 }
@@ -106,8 +106,8 @@ sealed class GenreModel with _$GenreModel {
 
   factory GenreModel.fromGenreTagDto(GenreTagDto dto) {
     return GenreModel(
-      id: dto.id!,
-      name: dto.title!,
+      id: dto.id ?? 0,
+      name: dto.title ?? '',
     );
   }
 }
@@ -128,8 +128,8 @@ sealed class SeriesMetadataModel with _$SeriesMetadataModel {
 
   factory SeriesMetadataModel.fromSeriesMetadataDto(SeriesMetadataDto dto) {
     return SeriesMetadataModel(
-      seriesId: dto.seriesId!,
-      totalChapters: dto.totalCount!,
+      seriesId: dto.seriesId ?? 0,
+      totalChapters: dto.totalCount ?? 0,
       releaseYear: dto.releaseYear,
       summary: dto.summary,
       writers: dto.writers?.map(PersonModel.fromPersonDto).toList() ?? [],

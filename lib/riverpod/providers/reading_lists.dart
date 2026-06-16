@@ -9,13 +9,15 @@ part 'reading_lists.g.dart';
 @riverpod
 Stream<List<ReadingListModel>> readingLists(Ref ref) {
   final readingListsRepository = ref.watch(readingListsRepositoryProvider);
-  return readingListsRepository.watchReadingLists();
+  return readingListsRepository.watchReadingLists().distinct();
 }
 
 @riverpod
 Stream<ReadingListModel> readingList(Ref ref, {required int readingListId}) {
   final readingListsRepository = ref.watch(readingListsRepositoryProvider);
-  return readingListsRepository.watchReadingList(readingListId: readingListId);
+  return readingListsRepository
+      .watchReadingList(readingListId: readingListId)
+      .distinct();
 }
 
 @riverpod
@@ -24,23 +26,23 @@ Stream<List<ChapterModel>> readingListChapters(
   required int readingListId,
 }) {
   final readingListsRepository = ref.watch(readingListsRepositoryProvider);
-  return readingListsRepository.watchReadingListChapters(
-    readingListId: readingListId,
-  );
+  return readingListsRepository
+      .watchReadingListChapters(readingListId: readingListId)
+      .distinct();
 }
 
 @riverpod
 Stream<double> readingListProgress(Ref ref, {required int readingListId}) {
   final readingListsRepository = ref.watch(readingListsRepositoryProvider);
-  return readingListsRepository.watchReadingListProgress(
-    readingListId: readingListId,
-  );
+  return readingListsRepository
+      .watchReadingListProgress(readingListId: readingListId)
+      .distinct();
 }
 
 @riverpod
 Stream<ImageModel?> readingListCover(Ref ref, {required int readingListId}) {
   final readingListsRepository = ref.watch(readingListsRepositoryProvider);
-  return readingListsRepository.watchReadingListCover(
-    readingListId: readingListId,
-  );
+  return readingListsRepository
+      .watchReadingListCover(readingListId: readingListId)
+      .distinct();
 }

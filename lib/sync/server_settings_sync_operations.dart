@@ -1,4 +1,5 @@
 import 'package:kover/api/openapi.swagger.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/mapping/dto/server_settings_dto_mappings.dart';
 
@@ -14,7 +15,7 @@ class ServerSettingsSyncOperations {
     final res = await _client.apiSettingsGet();
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load chapter: ${res.error}');
+      throw SyncException('Failed to load chapter: ${res.error}');
     }
 
     return res.body!.toServerSettingsCompanion();

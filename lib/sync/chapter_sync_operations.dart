@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/api/openapi.swagger.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/mapping/dto/chapter_dto_mappings.dart';
@@ -18,7 +19,7 @@ class ChapterSyncOperations {
     final res = await _client.apiChapterGet(chapterId: chapterId);
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load chapter: ${res.error}');
+      throw SyncException('Failed to load chapter: ${res.error}');
     }
 
     return res.body!.toChapterCompanion();

@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:html/dom.dart';
+import 'package:html/dom.dart' hide Text;
 import 'package:kover/models/page_content.dart';
 import 'package:kover/riverpod/providers/book.dart';
 import 'package:kover/riverpod/providers/reader//reader.dart';
@@ -53,13 +53,33 @@ class EpubReflow extends _$EpubReflow {
     required int page,
   }) async {
     // force rerender on settings change
-    ref.listen(epubReaderSettingsProvider(seriesId: seriesId), (prev, next) {
-      ref.invalidate(
-        readerProvider(seriesId: seriesId, chapterId: chapterId),
-        asReload: true,
-      );
-      ref.invalidateSelf(asReload: true);
-    });
+    ref.listen(
+      epubReaderSettingsProvider(seriesId: seriesId).select(
+        (s) {
+          final v = s.value;
+          return v == null
+              ? null
+              : (
+                  v.fontSize,
+                  v.marginSize,
+                  v.lineHeight,
+                  v.wordSpacing,
+                  v.letterSpacing,
+                  v.readDirection,
+                  v.imageFit,
+                );
+        },
+      ),
+      (prev, next) {
+        if (prev != null && next != null && prev != next) {
+          ref.invalidate(
+            readerProvider(seriesId: seriesId, chapterId: chapterId),
+            asReload: true,
+          );
+          ref.invalidateSelf(asReload: true);
+        }
+      },
+    );
 
     final readerState = await ref.read(
       readerProvider(
@@ -228,6 +248,10 @@ class EpubNavigation extends _$EpubNavigation {
     _handleNavigationProviderChanges();
     _handleProgress();
     _handleSettingsChanges();
+
+    ref.onDispose(() {
+      _reflowSub?.close();
+    });
 
     return EpubNavigationState(
       page: reader.initialPage,

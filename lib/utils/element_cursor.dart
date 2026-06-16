@@ -2,6 +2,8 @@ import 'package:html/dom.dart';
 
 class ElementCursor {
   static const Set<String> _leafTags = {'img', 'svg'};
+  static final _sentenceRegex = RegExp(r'[\s\S]+?[.!?]+(?:\s+|$)');
+  static final _wordSplitRegex = RegExp(r'(?<=\s)');
 
   final Element _root;
   final Element _buffer;
@@ -86,10 +88,7 @@ class ElementCursor {
   bool _splitTextNode(Text child) {
     final text = child.text;
 
-    // Split by sentences, keeping the delimiters and trailing whitespaces.
-    final sentencesReg = RegExp(r'[\s\S]+?[.!?]+(?:\s+|$)');
-
-    final sentences = sentencesReg
+    final sentences = _sentenceRegex
         .allMatches(text)
         .map((match) => match.group(0)!)
         .toList();
@@ -106,7 +105,7 @@ class ElementCursor {
 
     // Split by words, keeping the whitespace (Regex keeps the delimiters)
     // This captures words and the spaces following them.
-    final words = text.split(RegExp(r'(?<=\s)'));
+    final words = text.split(_wordSplitRegex);
 
     if (words.length <= 1) {
       // If it's only one word and it still doesn't fit,

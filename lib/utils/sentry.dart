@@ -1,13 +1,16 @@
 import 'dart:async';
 
+import 'package:kover/utils/env.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
-const _sentryDsn =
-    'https://b5a6b68eea23284eb215f1661c8661e2@o4511480670060544.ingest.de.sentry.io/4511480676679760';
 
 Future<void> initializeSentry({
   required FutureOr<void> Function() appRunner,
 }) async {
+  if (Env.sentryDsn.isEmpty) {
+    await appRunner();
+    return;
+  }
+
   await SentryFlutter.init(
     sentryOptionsConfiguration,
     appRunner: appRunner,
@@ -15,13 +18,14 @@ Future<void> initializeSentry({
 }
 
 FutureOr<void> sentryOptionsConfiguration(SentryFlutterOptions options) {
-  options.dsn = _sentryDsn;
+  options.dsn = Env.sentryDsn;
   options.sendDefaultPii = false;
   options.enableLogs = true;
   options.enableTombstone = true;
-  options.tracesSampleRate = 1.0;
+  const isDebug = bool.fromEnvironment('dart.vm.product') == false;
+  options.tracesSampleRate = isDebug ? 1.0 : 0.2;
   // ignore: experimental_member_use
-  options.profilesSampleRate = 1.0;
-  options.replay.sessionSampleRate = 0.1;
+  options.profilesSampleRate = isDebug ? 1.0 : 0.1;
+  options.replay.sessionSampleRate = isDebug ? 0.1 : 0.0;
   options.replay.onErrorSampleRate = 1.0;
 }

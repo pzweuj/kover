@@ -16,7 +16,8 @@ Stream<bool> canReadChapter(Ref ref, int chapterId) {
   final repo = ref.watch(downloadRepositoryProvider);
   return repo
       .watchIsChapterDownloaded(chapterId: chapterId)
-      .map((isDownloaded) => isDownloaded || hasConnection);
+      .map((isDownloaded) => isDownloaded || hasConnection)
+      .distinct();
 }
 
 /// Whether the [seriesId] can be read in the current state.
@@ -36,7 +37,8 @@ Stream<bool> canReadSeries(Ref ref, int seriesId) {
 
   return repo
       .watchIsChapterDownloaded(chapterId: chapter.id)
-      .map((isDownloaded) => isDownloaded || hasConnection);
+      .map((isDownloaded) => isDownloaded || hasConnection)
+      .distinct();
 }
 
 /// Fetch continue point for [seriesId] asynchronously. Guarantees a value
@@ -71,7 +73,7 @@ Stream<ChapterModel> volumeContinuePoint(
   required int volumeId,
 }) async* {
   final repo = ref.watch(readerRepositoryProvider);
-  yield* repo.watchVolumeContinuePoint(volumeId: volumeId);
+  yield* repo.watchVolumeContinuePoint(volumeId: volumeId).distinct();
 }
 
 @riverpod
@@ -80,7 +82,9 @@ Stream<ChapterModel> readingListContinuePoint(
   required int readingListId,
 }) async* {
   final repo = ref.watch(readerRepositoryProvider);
-  yield* repo.watchReadingListContinuePoint(readingListId: readingListId);
+  yield* repo
+      .watchReadingListContinuePoint(readingListId: readingListId)
+      .distinct();
 }
 
 @riverpod
@@ -89,9 +93,9 @@ Stream<double> readingListContinuePointProgress(
   required int readingListId,
 }) async* {
   final repo = ref.watch(readerRepositoryProvider);
-  yield* repo.watchReadingListContinuePointProgress(
-    readingListId: readingListId,
-  );
+  yield* repo
+      .watchReadingListContinuePointProgress(readingListId: readingListId)
+      .distinct();
 }
 
 @riverpod

@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/api/openapi.swagger.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/mapping/dto/reading_list_dto_mappings.dart';
@@ -36,7 +37,7 @@ class ReadingListSyncOperations {
     );
 
     if (!res.isSuccessful) {
-      throw Exception('Failed to fetch reading lists: ${res.error}');
+      throw SyncException('Failed to fetch reading lists: ${res.error}');
     }
 
     return res.body?.map(
@@ -54,7 +55,7 @@ class ReadingListSyncOperations {
     );
 
     if (!res.isSuccessful) {
-      throw Exception('Failed to fetch collection series: ${res.error}');
+      throw SyncException('Failed to fetch collection series: ${res.error}');
     }
 
     return res.body?.map(

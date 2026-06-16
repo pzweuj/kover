@@ -6,6 +6,7 @@ import 'package:kover/riverpod/providers/client.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
 import 'package:kover/riverpod/repository/database.dart';
 import 'package:kover/sync/reading_list_sync_operations.dart';
+import 'package:kover/utils/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reading_lists_repository.g.dart';
@@ -99,10 +100,18 @@ class ReadingListsRepository {
     await _db.readingListsDao.upsertReadingListsBatch(readingLists);
 
     for (var list in readingLists) {
-      final chapters = await _client.getReadingListChapters(
-        list.id.value,
-      );
-      await _db.readingListsDao.upsertReadingListChaptersBatch(chapters);
+      try {
+        final chapters = await _client.getReadingListChapters(
+          list.id.value,
+        );
+        await _db.readingListsDao.upsertReadingListChaptersBatch(chapters);
+      } catch (e) {
+        log.e(
+          'Failed to fetch chapters for reading list ${list.id.value}',
+          error: e,
+        );
+        continue;
+      }
     }
   }
 
@@ -110,9 +119,18 @@ class ReadingListsRepository {
   Future<void> fetchMissingCovers() async {
     final missingIds = await _db.collectionsDao.getMissingCovers();
 
-    final covers = [
-      for (var id in missingIds) await _client.getReadingListCover(id),
-    ].whereType<ReadingListCoversCompanion>();
+    final covers = <ReadingListCoversCompanion>[];
+    for (var id in missingIds) {
+      try {
+        final cover = await _client.getReadingListCover(id);
+        if (cover != null) {
+          covers.add(cover);
+        }
+      } catch (e) {
+        log.e('Failed to fetch cover for reading list $id', error: e);
+        continue;
+      }
+    }
 
     await _db.readingListsDao.upsertReadingListCoversBatch(covers);
   }

@@ -94,11 +94,16 @@ class VolumesRepository {
   Future<void> fetchMissingCovers() async {
     final missing = await _db.volumesDao.getMissingCovers();
     for (final id in missing) {
-      final volumeCover = await _client.getVolumeCover(id);
+      try {
+        final volumeCover = await _client.getVolumeCover(id);
 
-      if (volumeCover == null) continue;
+        if (volumeCover == null) continue;
 
-      await _db.volumesDao.upsertVolumeCover(volumeCover);
+        await _db.volumesDao.upsertVolumeCover(volumeCover);
+      } catch (e) {
+        log.e('Failed to fetch cover for volume $id', error: e);
+        continue;
+      }
     }
   }
 }

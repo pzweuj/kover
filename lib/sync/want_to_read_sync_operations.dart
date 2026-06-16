@@ -1,4 +1,5 @@
 import 'package:kover/api/openapi.swagger.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/mapping/dto/series_dto_mappings.dart';
 
@@ -28,7 +29,7 @@ class WantToReadSyncOperations {
       ),
     );
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load want-to-read list: ${res.error}');
+      throw SyncException('Failed to load want-to-read list: ${res.error}');
     }
     return res.body!.map(
       (dto) => dto.toSeriesCompanion(),
@@ -41,7 +42,7 @@ class WantToReadSyncOperations {
       body: UpdateWantToReadDto(seriesIds: seriesIds),
     );
     if (!res.isSuccessful) {
-      throw Exception('Failed to add to want-to-read: ${res.error}');
+      throw SyncException('Failed to add to want-to-read: ${res.error}');
     }
   }
 
@@ -51,7 +52,7 @@ class WantToReadSyncOperations {
       body: UpdateWantToReadDto(seriesIds: seriesIds),
     );
     if (!res.isSuccessful) {
-      throw Exception('Failed to remove from want-to-read: ${res.error}');
+      throw SyncException('Failed to remove from want-to-read: ${res.error}');
     }
   }
 }

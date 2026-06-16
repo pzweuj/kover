@@ -70,6 +70,10 @@ class Reader extends _$Reader {
 
     final initialPage = progress?.pageNum ?? 0;
 
+    ref.onDispose(() {
+      _saveProgressDebounce?.cancel();
+    });
+
     return ReaderState(
       libraryId: series.libraryId,
       series: series,

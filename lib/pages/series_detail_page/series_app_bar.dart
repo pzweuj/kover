@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/riverpod/managers/download_manager.dart';
 import 'package:kover/riverpod/managers/sync_manager.dart';
@@ -47,7 +48,7 @@ class SeriesAppBar extends HookConsumerWidget {
           toolbarHeight: kToolbarHeight,
           leadingWidth: 56,
           leading: _FloatingCircleButton(
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () => context.pop(),
             child: const Icon(LucideIcons.arrowLeft, size: 20),
           ),
           actions: [

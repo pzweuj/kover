@@ -61,6 +61,7 @@ sealed class SyncState with _$SyncState {
 class SyncManager extends _$SyncManager {
   bool _hasUser = false;
   bool _hasConnection = false;
+  bool _isProcessing = false;
   final List<Set<SyncPhase>> _queuedPhases = [];
   final Set<SyncPhase> _runningPhases = {};
 
@@ -183,19 +184,26 @@ class SyncManager extends _$SyncManager {
   }
 
   Future<void> _processQueue() async {
-    if (_runningPhases.isNotEmpty || _queuedPhases.isEmpty) return;
-
-    while (_queuedPhases.isNotEmpty) {
-      final nextPhases = _queuedPhases.removeAt(0);
-      await Future.wait(
-        nextPhases.map((phase) async {
-          final callback = _getCallback(phase);
-          await _runPhase(phase, callback);
-        }),
-      );
+    if (_isProcessing || _runningPhases.isNotEmpty || _queuedPhases.isEmpty) {
+      return;
     }
 
-    state = const SyncState.idle();
+    _isProcessing = true;
+    try {
+      while (_queuedPhases.isNotEmpty) {
+        final nextPhases = _queuedPhases.removeAt(0);
+        await Future.wait(
+          nextPhases.map((phase) async {
+            final callback = _getCallback(phase);
+            await _runPhase(phase, callback);
+          }),
+        );
+      }
+
+      state = const SyncState.idle();
+    } finally {
+      _isProcessing = false;
+    }
   }
 
   Future<void> _runPhase(

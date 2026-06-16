@@ -23,7 +23,9 @@ Stream<bool> hasConnection(Ref ref) async* {
   WidgetsBinding.instance.addObserver(observer);
   ref.onDispose(() => WidgetsBinding.instance.removeObserver(observer));
 
-  final current = await Connectivity().checkConnectivity();
+  final current = await Connectivity().checkConnectivity().catchError(
+    (_) => [ConnectivityResult.none],
+  );
   final hasInterface = !current.contains(ConnectivityResult.none);
   yield hasInterface && ping;
 

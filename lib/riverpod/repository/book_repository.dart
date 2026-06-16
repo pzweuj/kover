@@ -99,8 +99,13 @@ class BookRepository {
   Future<void> fetchMissingChaptersTocs() async {
     final chapters = await _db.bookDao.getMissingChapterIds();
     for (final id in chapters) {
-      final entries = await _client.getBookChapters(id);
-      await _db.bookDao.upsertToc(id, entries);
+      try {
+        final entries = await _client.getBookChapters(id);
+        await _db.bookDao.upsertToc(id, entries);
+      } catch (e) {
+        log.e('Failed to fetch TOC for chapter $id', error: e);
+        continue;
+      }
     }
   }
 

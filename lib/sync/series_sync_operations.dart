@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/api/openapi.swagger.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/database/dao/series_dao.dart';
@@ -53,7 +54,7 @@ class SeriesSyncOperations {
     );
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load recently added: ${res.error}');
+      throw SyncException('Failed to load recently added: ${res.error}');
     }
 
     return res.body!.map(
@@ -66,7 +67,7 @@ class SeriesSyncOperations {
     final res = await _client.apiSeriesRecentlyUpdatedSeriesPost();
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load recently updated: ${res.error}');
+      throw SyncException('Failed to load recently updated: ${res.error}');
     }
 
     return Future.wait(
@@ -83,7 +84,7 @@ class SeriesSyncOperations {
     final res = await _client.apiSeriesSeriesIdGet(seriesId: seriesId);
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load series: ${res.error}');
+      throw SyncException('Failed to load series: ${res.error}');
     }
 
     return res.body!.toSeriesCompanion();
@@ -111,7 +112,7 @@ class SeriesSyncOperations {
     final res = await _client.apiSeriesMetadataGet(seriesId: seriesId);
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load series metadata: ${res.error}');
+      throw SyncException('Failed to load series metadata: ${res.error}');
     }
 
     final dto = res.body!;
@@ -125,7 +126,7 @@ class SeriesSyncOperations {
     final res = await _client.apiSeriesSeriesDetailGet(seriesId: seriesId);
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load series detail: ${res.error}');
+      throw SyncException('Failed to load series detail: ${res.error}');
     }
 
     final dto = res.body!;
@@ -194,7 +195,7 @@ class SeriesSyncOperations {
     );
 
     if (!res.isSuccessful || res.body == null) {
-      throw Exception('Failed to load series: ${res.error}');
+      throw SyncException('Failed to load series: ${res.error}');
     }
     return res.body!;
   }

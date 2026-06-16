@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:kover/utils/exceptions.dart';
 import 'package:kover/api/openapi.swagger.dart';
 import 'package:kover/database/app_database.dart';
 import 'package:kover/mapping/dto/collection_dto_mappings.dart';
@@ -17,7 +18,7 @@ class CollectionSyncOperations {
     final res = await _client.apiCollectionGet();
 
     if (!res.isSuccessful) {
-      throw Exception('Failed to fetch collections: ${res.error}');
+      throw SyncException('Failed to fetch collections: ${res.error}');
     }
 
     return res.body?.map((collection) => collection.toCollectionsCompanion()) ??
@@ -50,7 +51,7 @@ class CollectionSyncOperations {
     );
 
     if (!res.isSuccessful) {
-      throw Exception('Failed to fetch collection series: ${res.error}');
+      throw SyncException('Failed to fetch collection series: ${res.error}');
     }
 
     return res.body?.map(

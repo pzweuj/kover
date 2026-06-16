@@ -16,8 +16,8 @@ sealed class UserModel with _$UserModel {
 
   factory UserModel.fromUserDto(UserDto dto) {
     return UserModel(
-      id: dto.id!,
-      username: dto.username!,
+      id: dto.id ?? 0,
+      username: dto.username ?? '',
     );
   }
 }

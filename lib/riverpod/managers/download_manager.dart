@@ -34,6 +34,7 @@ sealed class DownloadManagerState with _$DownloadManagerState {
 @JsonPersist()
 class DownloadManager extends _$DownloadManager {
   final Map<int, CancelableOperation<void>> _activeTasks = {};
+  bool _isProcessing = false;
 
   @override
   Future<DownloadManagerState> build() async {
@@ -126,26 +127,32 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> _processQueue() async {
+    if (_isProcessing) return;
     if (ref.read(hasConnectionProvider).value != true ||
         ref.read(syncManagerProvider) is SyncingState) {
       return;
     }
 
-    final concurrentDownloads = (await ref.watch(
+    final concurrentDownloads = (await ref.read(
       downloadSettingsProvider.future,
     )).concurrentDownloads;
 
-    while (_activeTasks.length < concurrentDownloads &&
-        (state.value?.downloadQueue.isNotEmpty ?? false)) {
-      final nextId = state.value!.downloadQueue
-          .where((i) => !_activeTasks.containsKey(i))
-          .firstOrNull;
+    _isProcessing = true;
+    try {
+      while (_activeTasks.length < concurrentDownloads &&
+          (state.value?.downloadQueue.isNotEmpty ?? false)) {
+        final nextId = state.value!.downloadQueue
+            .where((i) => !_activeTasks.containsKey(i))
+            .firstOrNull;
 
-      if (nextId == null) break;
+        if (nextId == null) break;
 
-      log.d('Starting download for chapter $nextId');
+        log.d('Starting download for chapter $nextId');
 
-      await _startDownload(nextId);
+        await _startDownload(nextId);
+      }
+    } finally {
+      _isProcessing = false;
     }
   }
 

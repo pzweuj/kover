@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:kover/models/epub_image_fit.dart';
+import 'package:kover/utils/lru_cache.dart';
 
 class CachedImageFactory extends WidgetFactory {
-  // final BuildContext context;
-  final Map<int, MemoryImage> _cache = {};
+  final LruCache<String, MemoryImage> _cache = LruCache(maxSize: 100);
   final EpubImageFit imageFit;
 
   CachedImageFactory({this.imageFit = EpubImageFit.fitWidth});
@@ -17,9 +17,7 @@ class CachedImageFactory extends WidgetFactory {
       return super.buildImageWidget(meta, src);
     }
 
-    final hash = src.url.hashCode;
-
-    final provider = _cache[hash] ??= MemoryImage(bytes);
+    final provider = _cache[src.url] ??= MemoryImage(bytes);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -34,7 +32,7 @@ class CachedImageFactory extends WidgetFactory {
         return switch (imageFit) {
           EpubImageFit.original => Center(
             child: Image(
-              key: ValueKey(hash),
+              key: ValueKey(src.url),
               image: provider,
               gaplessPlayback: true,
               fit: BoxFit.contain,
@@ -42,7 +40,7 @@ class CachedImageFactory extends WidgetFactory {
           ),
           EpubImageFit.fitWidth => Center(
             child: Image(
-              key: ValueKey(hash),
+              key: ValueKey(src.url),
               image: provider,
               width: availableWidth,
               gaplessPlayback: true,
@@ -51,7 +49,7 @@ class CachedImageFactory extends WidgetFactory {
           ),
           EpubImageFit.fitHeight => Center(
             child: Image(
-              key: ValueKey(hash),
+              key: ValueKey(src.url),
               image: provider,
               height: availableHeight,
               gaplessPlayback: true,
@@ -62,7 +60,7 @@ class CachedImageFactory extends WidgetFactory {
             width: availableWidth,
             height: availableHeight,
             child: Image(
-              key: ValueKey(hash),
+              key: ValueKey(src.url),
               image: provider,
               gaplessPlayback: true,
               fit: BoxFit.contain,
@@ -72,7 +70,7 @@ class CachedImageFactory extends WidgetFactory {
             width: availableWidth,
             height: availableHeight,
             child: Image(
-              key: ValueKey(hash),
+              key: ValueKey(src.url),
               image: provider,
               gaplessPlayback: true,
               fit: BoxFit.fill,
@@ -81,5 +79,9 @@ class CachedImageFactory extends WidgetFactory {
         };
       },
     );
+  }
+
+  void clearCache() {
+    _cache.clear();
   }
 }

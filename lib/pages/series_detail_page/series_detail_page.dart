@@ -26,10 +26,6 @@ class SeriesDetailPage extends ConsumerWidget {
     final metadata = ref.watch(seriesMetadataProvider(seriesId: seriesId));
     final progress = ref.watch(seriesProgressProvider(seriesId: seriesId));
 
-    final continuePoint = ref.watch(
-      continuePointStreamProvider(seriesId: seriesId),
-    );
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Async(

@@ -235,7 +235,12 @@ class SeriesRepository {
 
     final metadata = <SeriesMetadataCompanions>[];
     for (final id in series) {
-      metadata.add(await _client.getSeriesMetadata(id));
+      try {
+        metadata.add(await _client.getSeriesMetadata(id));
+      } catch (e) {
+        log.e('Failed to fetch metadata for series $id', error: e);
+        continue;
+      }
     }
 
     await _db.seriesMetadataDao.upsertMetadataBatch(metadata);
@@ -265,10 +270,15 @@ class SeriesRepository {
   /// Refresh series details for a list of series
   Future<void> refreshSeriesDetails(Iterable<int> seriesIds) async {
     for (final id in seriesIds) {
-      final details = await _client.getSeriesDetail(id);
-      await _db.seriesDao.mergeSeriesDetails(
-        details,
-      );
+      try {
+        final details = await _client.getSeriesDetail(id);
+        await _db.seriesDao.mergeSeriesDetails(
+          details,
+        );
+      } catch (e) {
+        log.e('Failed to refresh details for series $id', error: e);
+        continue;
+      }
     }
   }
 
@@ -276,11 +286,16 @@ class SeriesRepository {
   Future<void> fetchMissingCovers() async {
     final missingIds = await _db.seriesDao.getMissingCovers();
     for (final id in missingIds) {
-      final seriesCover = await _client.getSeriesCover(id);
+      try {
+        final seriesCover = await _client.getSeriesCover(id);
 
-      if (seriesCover == null) continue;
+        if (seriesCover == null) continue;
 
-      await _db.seriesDao.upsertSeriesCover(seriesCover);
+        await _db.seriesDao.upsertSeriesCover(seriesCover);
+      } catch (e) {
+        log.e('Failed to fetch cover for series $id', error: e);
+        continue;
+      }
     }
   }
 
@@ -295,11 +310,16 @@ class SeriesRepository {
     final volumeIds = details.volumes.map((v) => v.volume.id.value).toList();
 
     for (final volumeId in volumeIds) {
-      final volumeCover = await _volumeClient.getVolumeCover(volumeId);
+      try {
+        final volumeCover = await _volumeClient.getVolumeCover(volumeId);
 
-      if (volumeCover == null) continue;
+        if (volumeCover == null) continue;
 
-      await _db.volumesDao.upsertVolumeCover(volumeCover);
+        await _db.volumesDao.upsertVolumeCover(volumeCover);
+      } catch (e) {
+        log.e('Failed to fetch cover for volume $volumeId', error: e);
+        continue;
+      }
     }
 
     final chapters = details.volumes.expand((v) => v.chapters).toList();
@@ -308,11 +328,16 @@ class SeriesRepository {
     final chapterIds = chapters.map((c) => c.id.value).toSet();
 
     for (final chapterId in chapterIds) {
-      final chapterCover = await _chapterClient.getChapterCover(chapterId);
+      try {
+        final chapterCover = await _chapterClient.getChapterCover(chapterId);
 
-      if (chapterCover == null) continue;
+        if (chapterCover == null) continue;
 
-      await _db.chaptersDao.upsertChapterCover(chapterCover);
+        await _db.chaptersDao.upsertChapterCover(chapterCover);
+      } catch (e) {
+        log.e('Failed to fetch cover for chapter $chapterId', error: e);
+        continue;
+      }
     }
   }
 }

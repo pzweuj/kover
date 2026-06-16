@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kover/l10n/app_localizations.dart';
 import 'package:kover/models/series_model.dart';
 import 'package:kover/utils/layout_constants.dart';
+import 'package:kover/widgets/empty_state.dart';
 import 'package:kover/widgets/lists/series_sliver_grid.dart';
 
 class CollapsibleSection extends HookConsumerWidget {
@@ -26,7 +27,9 @@ class CollapsibleSection extends HookConsumerWidget {
     final toShow = showAll.value ? total : 1;
 
     if (series.isEmpty) {
-      return const SliverToBoxAdapter(child: SizedBox.shrink());
+      return const SliverToBoxAdapter(
+        child: EmptyStateWidget(message: '开始阅读以填充此区域'),
+      );
     }
 
     return SliverMainAxisGroup(

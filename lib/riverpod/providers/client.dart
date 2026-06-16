@@ -4,6 +4,8 @@ import 'package:chopper/chopper.dart';
 import 'package:http/http.dart' as http;
 import 'package:kover/api/openapi.swagger.dart';
 import 'package:kover/riverpod/providers/settings/credentials.dart';
+import 'package:kover/utils/exceptions.dart';
+import 'package:kover/utils/logging.dart';
 import 'package:kover/widgets/util/network_switch_listener.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -48,6 +50,9 @@ class FallbackHttpClient extends http.BaseClient {
   /// How often to probe whether primary is back.
   static const _recoveryInterval = Duration(minutes: 15);
 
+  /// Default timeout for all requests
+  static const _defaultTimeout = Duration(seconds: 30);
+
   FallbackHttpClient({
     required this.primaryBaseUrl,
     this.fallbackBaseUrl,
@@ -70,12 +75,12 @@ class FallbackHttpClient extends http.BaseClient {
         request,
         _replaceBaseUrl(request.url, from: primaryBaseUrl, to: fallbackBaseUrl),
       );
-      return _inner.send(fallbackRequest ?? request);
+      return _inner.send(fallbackRequest ?? request).timeout(_defaultTimeout);
     }
 
     // No fallback configured — just send normally.
     if (fallbackBaseUrl == null) {
-      return _inner.send(request);
+      return _inner.send(request).timeout(_defaultTimeout);
     }
 
     // Try primary with timeout; on failure, switch to fallback permanently.
@@ -87,7 +92,8 @@ class FallbackHttpClient extends http.BaseClient {
         return _sendFallback(request, fallbackBaseUrl);
       }
       return response;
-    } catch (_) {
+    } catch (e) {
+      log.w('Primary request failed, switching to fallback', error: e);
       _switchToFallback(request, fallbackBaseUrl);
       return _sendFallback(request, fallbackBaseUrl);
     }
@@ -124,8 +130,9 @@ class FallbackHttpClient extends http.BaseClient {
         _switchedToFallback = false;
         onFallback?.call(fallbackBaseUrl!.host, primaryBaseUrl.host);
       }
-    } catch (_) {
+    } catch (e) {
       // Primary still down, stay on fallback.
+      log.d('Primary probe failed, staying on fallback');
     }
   }
 
@@ -192,12 +199,12 @@ ChopperClient authenticatedClient(Ref ref) {
   final key = ref.watch(apiKeyProvider);
 
   if (settings?.url == null || settings?.apiKey == null) {
-    throw Exception('Credentials not set in settings');
+    throw const CredentialsException('Credentials not set in settings');
   }
 
   final uri = Uri.tryParse(settings!.url!.trim());
   if (uri == null || !_isValidBaseUri(uri)) {
-    throw Exception('Invalid URL in settings');
+    throw const InvalidUrlException('Invalid URL in settings');
   }
 
   final fallbackUrl = settings.fallbackUrl?.trim();
@@ -208,7 +215,7 @@ ChopperClient authenticatedClient(Ref ref) {
   if (fallbackUrl != null &&
       fallbackUrl.isNotEmpty &&
       (fallbackUri == null || !_isValidBaseUri(fallbackUri))) {
-    throw Exception('Invalid fallback URL in settings');
+    throw const InvalidUrlException('Invalid fallback URL in settings');
   }
 
   final client = getChopperClient(
@@ -219,6 +226,10 @@ ChopperClient authenticatedClient(Ref ref) {
       NetworkSwitchNotifier.instance.notify(from, to);
     },
   );
+
+  ref.onDispose(() {
+    client.httpClient.close();
+  });
 
   return client;
 }

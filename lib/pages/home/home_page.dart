@@ -26,23 +26,20 @@ class HomePageContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      extendBody: true,
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(syncManagerProvider.notifier).fullSync();
-          },
-          child: CustomScrollView(
-            slivers: [
-              ActionsAppBar(title: context.l10n.onDeck),
-              const OnDeck(),
-              const RecentlyUpdated(),
-              const RecentlyAdded(),
-              const SliverBottomPadding(),
-            ],
-          ),
+    return SafeArea(
+      bottom: false,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(syncManagerProvider.notifier).fullSync();
+        },
+        child: CustomScrollView(
+          slivers: [
+            ActionsAppBar(title: context.l10n.onDeck),
+            const OnDeck(),
+            const RecentlyUpdated(),
+            const RecentlyAdded(),
+            const SliverBottomPadding(),
+          ],
         ),
       ),
     );

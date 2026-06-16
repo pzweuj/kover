@@ -8,7 +8,7 @@ part 'collections.g.dart';
 @riverpod
 Stream<List<CollectionModel>> collections(Ref ref) {
   final repository = ref.watch(collectionsRepositoryProvider);
-  return repository.watchCollections();
+  return repository.watchCollections().distinct();
 }
 
 @riverpod
